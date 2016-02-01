@@ -1,0 +1,1 @@
+export const BOARD_CONNECT_TILE = 'BOARD_CONNECT_TILE';
