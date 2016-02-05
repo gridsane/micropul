@@ -1,16 +1,36 @@
-export function canConnect(tiles, tile, targetId, side) {
-  const tt = [...tiles];
-  const t = {...tile};
-  const targetCorners = getTileSideCorners(tt[targetId], side);
-  const corners = getTileSideCorners(t, getOppositeSide(side)).reverse();
+export function canConnect(tiles, tile, i, j) {
+  const costsSum = tiles.reduce((cost, t) => {
 
-  const cost = targetCorners.map((corner, i) => {
-    return getConnectionCost(corner, corners[i]);
-  }).reduce((acc, cc) => {
-    return acc + cc;
+    if (t.i === i - 1 && t.j === j) {
+      return cost + getSideConnectionCost(t, tile, 2);
+    }
+    if (t.i === i + 1 && t.j === j) {
+      return cost + getSideConnectionCost(t, tile, 0);
+    }
+    if (t.i === i && t.j === j - 1) {
+      return cost + getSideConnectionCost(t, tile, 1);
+    }
+    if (t.i === i && t.j === j + 1) {
+      return cost + getSideConnectionCost(t, tile, 3);
+    }
+
+    return cost;
   }, 0);
 
-  return cost > 0;
+  return costsSum > 0;
+}
+
+function getSideConnectionCost(tileA, tileB, side) {
+  const cornersA = getTileSideCorners(tileA, side);
+  const cornersB = getTileSideCorners(tileB, getOppositeSide(side)).reverse();
+
+  const cost = cornersA.map((corner, i) => {
+    return getConnectionCost(corner, cornersB[i]);
+  }).reduce((cost, connectionCost) => {
+    return cost + connectionCost;
+  }, 0);
+
+  return cost;
 }
 
 function getConnectionCost(cornerA, cornerB) {
@@ -24,7 +44,7 @@ function getConnectionCost(cornerA, cornerB) {
     return 0;
   }
 
-  return -4;
+  return -Infinity;
 }
 
 function getOppositeSide(side) {
