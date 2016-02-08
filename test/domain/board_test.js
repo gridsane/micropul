@@ -198,4 +198,44 @@ describe('Board logic', () => {
 
   });
 
+  it('returns powerups', () => {
+
+    const tiles = [
+      {
+        i: 0, j: 0,
+        corners: [[1], [0], [1], [2]],
+        rotation: 0,
+      },
+      {
+        i: 0, j: 1,
+        corners: [[0], [0], [1], [4, 5]],
+        rotation: 0,
+      },
+      {
+        i: 1, j: 0,
+        corners: [[2], [1], [3], [0]],
+        rotation: 0,
+      },
+    ];
+
+    // 1 0 | 0   0
+    // 2 1 | 4,5 1
+    // - -
+    // 2 1   0   1
+    // 0 3   2   0
+
+    const tile1 = {corners: [[0], [1], [0], [2]], rotation: 0};
+    expect(board.getPowerups(tiles, tile1, 1, 1)).toEqual([3]);
+
+    // 1 0 | 0   0
+    // 2 1 | 4,5 1
+    // - -
+    // 2 1   1   5
+    // 0 3   2   0
+
+    const tile2 = {corners: [[1], [5], [0], [2]], rotation: 0};
+    expect(board.getPowerups(tiles, tile2, 1, 1)).toEqual([3, 4, 5]);
+
+  });
+
 });

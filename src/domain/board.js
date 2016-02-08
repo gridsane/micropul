@@ -1,23 +1,57 @@
 export function canConnect(tiles, tile, i, j) {
-  const costsSum = tiles.reduce((cost, t) => {
+  return 0 < getConnectionTiles(tiles, tile, i, j).reduce((cost, def) => {
+    return cost + getSideConnectionCost(def.tile, tile, def.side);
+  }, 0);
+}
+
+export function getPowerups(tiles, tile, i, j) {
+  const powerups = getConnectionTiles(tiles, tile, i, j).reduce((powerups, def) => {
+    const cornersA = getTileSideCorners(def.tile, def.side);
+    const cornersB = getTileSideCorners(tile, getOppositeSide(def.side)).reverse();
+
+    cornersA.forEach((cornerA, i) => {
+      const cornerB = cornersB[i];
+      const aMicropuls = getCornerMicropuls(cornerA);
+      const bMicropuls = getCornerMicropuls(cornerB);
+      const aPowerups = getCornerPowerups(cornerA);
+      const bPowerups = getCornerPowerups(cornerB);
+
+      if (aMicropuls.length > 0 && bPowerups.length > 0) {
+        powerups.push(...bPowerups);
+      } else if(bMicropuls.length > 0 && aPowerups.length > 0) {
+        powerups.push(...aPowerups);
+      }
+    });
+
+    return powerups;
+  }, []).sort();
+
+  return [...new Set(powerups)];
+}
+
+function getConnectionTiles(tiles, tile, i, j) {
+  return tiles.reduce((affectedTiles, t) => {
+    let side = null;
 
     if (t.i === i - 1 && t.j === j) {
-      return cost + getSideConnectionCost(t, tile, 2);
+      side = 2;
     }
     if (t.i === i + 1 && t.j === j) {
-      return cost + getSideConnectionCost(t, tile, 0);
+      side = 0;
     }
     if (t.i === i && t.j === j - 1) {
-      return cost + getSideConnectionCost(t, tile, 1);
+      side = 1;
     }
     if (t.i === i && t.j === j + 1) {
-      return cost + getSideConnectionCost(t, tile, 3);
+      side = 3;
     }
 
-    return cost;
-  }, 0);
+    if (side !== null) {
+      affectedTiles.push({tile: t, side});
+    }
 
-  return costsSum > 0;
+    return affectedTiles;
+  }, []);
 }
 
 function getSideConnectionCost(tileA, tileB, side) {
@@ -76,6 +110,18 @@ export function rotateCorners(corners, rotation) {
   }
 
   return result;
+}
+
+function getCornerMicropuls(corner) {
+  return corner.filter((x) => {
+    return [1, 2].indexOf(x) !== -1;
+  });
+}
+
+function getCornerPowerups(corner) {
+  return corner.filter((x) => {
+    return [3, 4, 5].indexOf(x) !== -1;
+  });
 }
 
 /*
