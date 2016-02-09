@@ -238,4 +238,61 @@ describe('Board logic', () => {
 
   });
 
+  it('returns free positions', () => {
+    const tiles = [
+      {
+        i: 0, j: 0,
+        corners: [[2], [2], [1], [1]],
+        rotation: 0,
+      },
+      {
+        i: 1, j: 0,
+        corners: [[2], [2], [1], [1]],
+        rotation: 0,
+      },
+    ];
+
+    expect(board.getFreePositions(tiles)).toEqual([
+      {i: 0, j: 1},
+      {i: -1, j: 0},
+      {i: 0, j: -1},
+      {i: 2, j: 0},
+      {i: 1, j: 1},
+      {i: 1, j: -1},
+    ]);
+  });
+
+  it('returns possible connections', () => {
+
+    const tiles = [
+      {
+        i: 0, j: 0,
+        corners: [[2], [2], [1], [1]],
+        rotation: 0,
+      },
+    ];
+
+    // 2 2
+    // 1 1
+
+    const corners = [[1], [0], [1], [0]];
+
+    expect(board.getPossibleConnections(tiles, {
+      corners,
+      ...{rotation: 0},
+    })).toEqual([
+      {i: 1, j: 0},
+      {i: 0, j: -1},
+    ]);
+
+    expect(board.getPossibleConnections(tiles, {
+      corners,
+      ...{rotation: 1},
+    })).toEqual([
+      {i: 1, j: 0},
+      {i: 0, j: 1},
+    ]);
+
+  });
+
 });

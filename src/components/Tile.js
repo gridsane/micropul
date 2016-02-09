@@ -1,16 +1,19 @@
 import React, {Component} from 'react';
 import Radium from 'radium';
+import {DropTarget} from 'react-dnd';
 
 class Tile extends Component {
   render() {
     const {i, j, corners, rotation} = this.props;
 
-    return <g
-      transformOrigin="32 32"
-      transform={t(translate(j * 64, i * 64), rotate(rotation * 90, 32, 32))}>
-      <rect x={0} y={0} width={64} height={64} style={styles.tile} />
-      {this.renderCorners(corners)}
-    </g>;
+    return <svg viewBox="0 0 64 64" style={[styles.container, {
+          left: j * 64,
+          top: i * 64,
+          transform: rotate(rotation * 90, 32, 32),
+      }]}>
+        <rect x={0} y={0} width={64} height={64} style={styles.tile} />
+        {this.renderCorners(corners)}
+    </svg>;
   }
 
   renderCorners(corners) {
@@ -18,15 +21,22 @@ class Tile extends Component {
       return elements[corners[0].join('')];
     }
 
+    const ppp = [
+      [0, 0],
+      [0, 1],
+      [1, 1],
+      [1, 0],
+    ];
+
     return <g>{corners.map((d, p) => {
       if (d[0] === 0) {
         return null;
       }
 
-      const [j, i] = [0, 0, 1, 1, 0].splice(p, 2);
+      const [i, j] = ppp[p];
       const [x, y] = [j * 32, i * 32];
 
-      return <g transform={t(translate(x, y), rotate(90 * p, 16, 16))}>
+      return <g key={p} transform={t(translate(x, y), rotate(90 * p, 16, 16))}>
         {elements[d.join('')]}
       </g>;
 
@@ -42,8 +52,15 @@ const micropul = {
 };
 
 const styles = {
+  container: {
+    width: 64,
+    height: 64,
+    position: 'absolute',
+    background: '#f00',
+  },
+
   tile: {
-    fill: 'none',
+    fill: '#fff',
     strokeWidth: 1,
     stroke: '#666',
   },

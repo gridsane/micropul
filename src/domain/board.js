@@ -29,6 +29,48 @@ export function getPowerups(tiles, tile, i, j) {
   return [...new Set(powerups)];
 }
 
+export function getFreePositions(tiles) {
+  const occupied = tiles.map((tile) => {
+    return posHash(tile.i, tile.j);
+  });
+
+  return tiles.reduce((free, tile) => {
+    const {i, j} = tile;
+    [1, -1].forEach((d) => {
+      const ih = posHash(i + d, j);
+      const jh = posHash(i, j + d);
+
+      if (occupied.indexOf(ih) === -1) {
+        free.push({i: i + d, j});
+        occupied.push(ih);
+      }
+
+      if (occupied.indexOf(jh) === -1) {
+        free.push({i, j: j + d});
+        occupied.push(jh);
+      }
+    });
+
+    return free;
+  }, []);
+}
+
+export function getPossibleConnections(tiles, tile) {
+  const free = getFreePositions(tiles);
+
+  return free.reduce((possible, pos) => {
+    if (canConnect(tiles, tile, pos.i, pos.j)) {
+      possible.push(pos);
+    }
+
+    return possible;
+  }, []);
+}
+
+function posHash(i, j) {
+  return i + '_' + j;
+}
+
 function getConnectionTiles(tiles, tile, i, j) {
   return tiles.reduce((affectedTiles, t) => {
     let side = null;
@@ -136,8 +178,8 @@ function getCornerPowerups(corner) {
  *
  * CORNER TYPES
  * 0 - nothing
- * 1 - white micropul
- * 2 - black micropul
+ * 1 - micropul type 1
+ * 2 - micropul type 2
  * 3 - draw 1
  * 4 - draw 2
  * 5 - play again
@@ -168,9 +210,9 @@ export const possibleTiles = [
   [[1], [1], [1], [1]],
   [[1, 5], [1, 5], [1, 5], [1, 5]],
   [[1, 3], [1, 3], [1, 3], [1, 3]],
-].reduce((acc, tile) => {
-  acc.push(tile);
-  acc.push(tile.map((edges) => {
+].reduce((acc, corners, i) => {
+  acc.push({id: ((i + 1) * 2) - 2, corners});
+  acc.push({id: (i + 1) * 2 - 1, corners: corners.map((edges) => {
     return edges.map((edge) => {
       if (typeof(inverse[edge]) !== 'undefined') {
         return inverse[edge];
@@ -178,7 +220,7 @@ export const possibleTiles = [
 
       return edge;
     });
-  }));
+  })});
 
   return acc;
 }, []);

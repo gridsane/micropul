@@ -1,6 +1,13 @@
 import * as actions from '../actions/actionsTypes';
 
-const initialState = [];
+const initialState = [
+  {
+    id: 38,
+    i: 2, j: 2,
+    corners: [[1], [1], [2], [2]],
+    rotation: 0,
+  },
+];
 
 export default function board(state = initialState, action) {
   const handler = handlers[action.type];
