@@ -1,1 +1,1 @@
-export const BOARD_CONNECT_TILE = 'BOARD_CONNECT_TILE';
+export const BOARD_ADD_TILE = 'BOARD_ADD_TILE';

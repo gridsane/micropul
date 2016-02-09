@@ -13,7 +13,7 @@ export default function board(state = initialState, action) {
 }
 
 const handlers = {
-  [actions.BOARD_CONNECT_TILE]: (state, action) => {
-    return state;
+  [actions.BOARD_ADD_TILE]: (state, action) => {
+    return [...state, ...[action.tile]];
   },
 };
