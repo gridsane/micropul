@@ -16,10 +16,8 @@ class DragTile extends Component {
 export default DragSource('tile', {
   beginDrag(props) {
     props.onDragStart(props);
-
     return props;
   },
-
 }, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
   isDragging: monitor.isDragging(),

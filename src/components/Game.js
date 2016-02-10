@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
-import Board from './Board';
-import DragTile from './DragTile';
-import {connect} from 'react-redux';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import {connect} from 'react-redux';
+import Board from './Board';
+import DragTile from './DragTile';
 import {possibleTiles, getPossibleConnections} from '../domain/board';
 import {addTile} from '../actions/board';
 
+@DragDropContext(HTML5Backend)
 export class Game extends Component {
 
   state = {
@@ -15,8 +16,8 @@ export class Game extends Component {
 
   render() {
     return <div>
-
       <Board
+        tileSize={48}
         tiles={this.props.board}
         placeholders={this.state.possibleConnections}
         onTileConnect={::this._connectTile}/>
@@ -33,6 +34,7 @@ export class Game extends Component {
         })}
 
       </div>
+
       <code>
         {JSON.stringify(this.props.board, null, 4)}
       </code>
@@ -41,9 +43,8 @@ export class Game extends Component {
 
   _connectTile(props, i, j) {
     this.props.dispatch(addTile({
+      i, j,
       id: props.id,
-      i,
-      j,
       corners: props.corners,
       rotation: props.rotation,
     }));
@@ -61,4 +62,4 @@ export function mapToProps(state) {
   return state;
 }
 
-export default DragDropContext(HTML5Backend)(connect(mapToProps)(Game));
+export default connect(mapToProps)(Game);

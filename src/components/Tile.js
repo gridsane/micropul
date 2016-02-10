@@ -1,16 +1,26 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import Radium from 'radium';
-import {DropTarget} from 'react-dnd';
 
-class Tile extends Component {
+@Radium
+export default class Tile extends Component {
+
+  static propTypes = {
+    i: PropTypes.number.isRequired,
+    j: PropTypes.number.isRequired,
+    corners: PropTypes.array.isRequred,
+    rotation: PropTypes.number.isRequired,
+    size: PropTypes.number,
+  };
+
+  static defaultProps = {
+    size: 64,
+  };
+
   render() {
-    const {i, j, corners, rotation} = this.props;
+    const styles = this.getStyles();
+    const {corners} = this.props;
 
-    return <svg viewBox="0 0 64 64" style={[styles.container, {
-          left: j * 64,
-          top: i * 64,
-          transform: rotate(rotation * 90, 32, 32),
-      }]}>
+    return <svg viewBox="0 0 64 64" style={styles.container}>
         <rect x={0} y={0} width={64} height={64} style={styles.tile} />
         {this.renderCorners(corners)}
     </svg>;
@@ -21,30 +31,51 @@ class Tile extends Component {
       return elements[corners[0].join('')];
     }
 
-    const ppp = [
+    const cornerIndexCoordinates = [
       [0, 0],
       [0, 1],
       [1, 1],
       [1, 0],
     ];
 
-    return <g>{corners.map((d, p) => {
-      if (d[0] === 0) {
+    return <g>{corners.map((values, cornerIndex) => {
+      if (values[0] === 0) {
         return null;
       }
 
-      const [i, j] = ppp[p];
+      const [i, j] = cornerIndexCoordinates[cornerIndex];
       const [x, y] = [j * 32, i * 32];
 
-      return <g key={p} transform={t(translate(x, y), rotate(90 * p, 16, 16))}>
-        {elements[d.join('')]}
+      return <g
+        key={cornerIndex}
+        transform={t(translate(x, y), rotate(90 * cornerIndex, 16, 16))}>
+        {elements[values.join('')]}
       </g>;
 
     })}</g>;
   }
-}
 
-export default Radium(Tile);
+  getStyles() {
+    const {i, j, rotation, size} = this.props;
+
+    return {
+      container: {
+        left: j * size,
+        top: i * size,
+        width: size,
+        height: size,
+        transform: rotate(rotation * 90, size / 2, size / 2),
+        position: 'absolute',
+      },
+
+      tile: {
+        fill: '#fff',
+        strokeWidth: 1,
+        stroke: '#666',
+      },
+    };
+  }
+}
 
 const micropul = {
   strokeWidth: 2,
@@ -52,19 +83,6 @@ const micropul = {
 };
 
 const styles = {
-  container: {
-    width: 64,
-    height: 64,
-    position: 'absolute',
-    background: '#f00',
-  },
-
-  tile: {
-    fill: '#fff',
-    strokeWidth: 1,
-    stroke: '#666',
-  },
-
   micropulOne: {
     fill: '#000',
     ...micropul,
@@ -74,20 +92,15 @@ const styles = {
     fill: 'none',
     ...micropul,
   },
-
-  corner: {
-    fill: '#fff',
-    stroke: 'red',
-  },
 };
 
 const elements = {
-  1: <circle cx={16} cy={16} r="8" style={styles.micropulOne} />,
-  2: <circle cx={16} cy={16} r="8" style={styles.micropulTwo} />,
-  3: <circle cx={16} cy={16} r="3" />,
+  1: <circle cx={16} cy={16} r={8} style={styles.micropulOne} />,
+  2: <circle cx={16} cy={16} r={8} style={styles.micropulTwo} />,
+  3: <circle cx={16} cy={16} r={3} />,
   4: <g>
-    <circle cx={19} cy={13} r="3" />
-    <circle cx={13} cy={19} r="3" />
+    <circle cx={19} cy={13} r={3} />
+    <circle cx={13} cy={19} r={3} />
   </g>,
   5: <g>
     <rect x={11.5} y={14.5} width={9} height={3} />
@@ -96,7 +109,7 @@ const elements = {
 
   13: <g>
     <circle cx={32} cy={32} r={24} style={styles.micropulOne} />
-    <circle cx={32} cy={32} r="3" fill="#fff" />
+    <circle cx={32} cy={32} r={3} fill="#fff" />
   </g>,
   15: <g>
     <circle cx={32} cy={32} r={24} style={styles.micropulOne} />
@@ -106,7 +119,7 @@ const elements = {
 
   23: <g>
     <circle cx={32} cy={32} r={24} style={styles.micropulTwo} />
-    <circle cx={32} cy={32} r="3" fill="#000" />
+    <circle cx={32} cy={32} r={3} fill="#000" />
   </g>,
   25: <g>
     <circle cx={32} cy={32} r={24} style={styles.micropulTwo} />

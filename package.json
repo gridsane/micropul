@@ -15,6 +15,7 @@
     "lint": "`npm bin`/eslint src test"
   },
   "dependencies": {
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-polyfill": "^6.2.0",
     "body-parser": "^1.14.1",
     "express": "^4.13.3",
