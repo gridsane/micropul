@@ -7,7 +7,7 @@ export default class Tile extends Component {
   static propTypes = {
     i: PropTypes.number.isRequired,
     j: PropTypes.number.isRequired,
-    corners: PropTypes.array.isRequred,
+    corners: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
     rotation: PropTypes.number.isRequired,
     size: PropTypes.number,
   };

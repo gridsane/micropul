@@ -4,8 +4,8 @@ export function canConnect(tiles, tile, i, j) {
   }, 0);
 }
 
-export function getPowerups(tiles, tile, i, j) {
-  const powerups = getConnectionTiles(tiles, tile, i, j).reduce((powerups, def) => {
+export function getCatalysts(tiles, tile, i, j) {
+  const catalysts = getConnectionTiles(tiles, tile, i, j).reduce((catalysts, def) => {
     const cornersA = getTileSideCorners(def.tile, def.side);
     const cornersB = getTileSideCorners(tile, getOppositeSide(def.side)).reverse();
 
@@ -13,20 +13,20 @@ export function getPowerups(tiles, tile, i, j) {
       const cornerB = cornersB[i];
       const aMicropuls = getCornerMicropuls(cornerA);
       const bMicropuls = getCornerMicropuls(cornerB);
-      const aPowerups = getCornerPowerups(cornerA);
-      const bPowerups = getCornerPowerups(cornerB);
+      const aCatalysts = getCornerCatalysts(cornerA);
+      const bCatalysts = getCornerCatalysts(cornerB);
 
-      if (aMicropuls.length > 0 && bPowerups.length > 0) {
-        powerups.push(...bPowerups);
-      } else if(bMicropuls.length > 0 && aPowerups.length > 0) {
-        powerups.push(...aPowerups);
+      if (aMicropuls.length > 0 && bCatalysts.length > 0) {
+        catalysts.push(...bCatalysts);
+      } else if(bMicropuls.length > 0 && aCatalysts.length > 0) {
+        catalysts.push(...aCatalysts);
       }
     });
 
-    return powerups;
+    return catalysts;
   }, []).sort();
 
-  return [...new Set(powerups)];
+  return [...new Set(catalysts)];
 }
 
 export function getFreePositions(tiles) {
@@ -112,7 +112,7 @@ function getSideConnectionCost(tileA, tileB, side) {
 function getConnectionCost(cornerA, cornerB) {
   const [a, b] = [cornerA[0], cornerB[0]];
 
-  if (a === b && a > 0) {
+  if (a === b && b > 0 && b < 3) {
     return 1;
   }
 
@@ -160,19 +160,19 @@ function getCornerMicropuls(corner) {
   });
 }
 
-function getCornerPowerups(corner) {
+function getCornerCatalysts(corner) {
   return corner.filter((x) => {
     return [3, 4, 5].indexOf(x) !== -1;
   });
 }
 
 /*
- * SIDES
+ * SIDES & corners
  *       0
  *   .-------.
- *   |       |
+ *   | 0   1 |
  * 3 |       | 1
- *   |       |
+ *   | 3   2 |
  *   ._______.
  *       2
  *
@@ -180,9 +180,10 @@ function getCornerPowerups(corner) {
  * 0 - nothing
  * 1 - micropul type 1
  * 2 - micropul type 2
- * 3 - draw 1
- * 4 - draw 2
- * 5 - play again
+ * -- catalysts
+ * 3 - refill supply by 1 tile (1 dot)
+ * 4 - refill supply by 2 tiles (2 dots)
+ * 5 - take extra turn (plus sign)
  */
 const inverse = {1: 2, 2: 1};
 export const possibleTiles = [

@@ -18,7 +18,7 @@ describe('Board logic', () => {
 
   });
 
-  it('gets corners side corners', () => {
+  it('gets corners on particular side', () => {
 
     const corners = [[1], [2], [3], [4]];
 
@@ -92,6 +92,23 @@ describe('Board logic', () => {
     // 1 1 + 1 0
     // 0 2 + 2 1
     expect(board.canConnect(tiles, tile, 0, -1)).toBe(true);
+
+  });
+
+  it('do not connects tiles without micropul connection', () => {
+
+    const tiles = [{
+      i: 0, j: 0,
+      corners: [[1], [0], [2], [3]],
+      rotation: 0,
+    }];
+
+    const tile = {
+      corners: [[1], [4], [3], [0]],
+      rotation: 0,
+    };
+
+    expect(board.canConnect(tiles, tile, 0, -1)).toBe(false);
 
   });
 
@@ -198,7 +215,7 @@ describe('Board logic', () => {
 
   });
 
-  it('returns powerups', () => {
+  it('returns catalysts', () => {
 
     const tiles = [
       {
@@ -225,7 +242,7 @@ describe('Board logic', () => {
     // 0 3   2   0
 
     const tile1 = {corners: [[0], [1], [0], [2]], rotation: 0};
-    expect(board.getPowerups(tiles, tile1, 1, 1)).toEqual([3]);
+    expect(board.getCatalysts(tiles, tile1, 1, 1)).toEqual([3]);
 
     // 1 0 | 0   0
     // 2 1 | 4,5 1
@@ -234,7 +251,7 @@ describe('Board logic', () => {
     // 0 3   2   0
 
     const tile2 = {corners: [[1], [5], [0], [2]], rotation: 0};
-    expect(board.getPowerups(tiles, tile2, 1, 1)).toEqual([3, 4, 5]);
+    expect(board.getCatalysts(tiles, tile2, 1, 1)).toEqual([3, 4, 5]);
 
   });
 

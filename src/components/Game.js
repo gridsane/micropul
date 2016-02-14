@@ -4,8 +4,8 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import {connect} from 'react-redux';
 import Board from './Board';
 import DragTile from './DragTile';
-import {possibleTiles, getPossibleConnections} from '../domain/board';
-import {addTile} from '../actions/board';
+import {getPossibleConnections, getCatalysts} from '../domain/board';
+import {boardAddTile, applyCatalysts} from '../actions/game';
 
 @DragDropContext(HTML5Backend)
 export class Game extends Component {
@@ -15,16 +15,18 @@ export class Game extends Component {
   };
 
   render() {
+    const {board, hand, supply} = this.props;
+
     return <div>
       <Board
         tileSize={48}
-        tiles={this.props.board}
+        tiles={board}
         placeholders={this.state.possibleConnections}
         onTileConnect={::this._connectTile}/>
 
       <div style={{overflow: 'auto'}}>
 
-        {possibleTiles.map((tile, index) => {
+        {hand.map((tile, index) => {
           return <DragTile
             key={index}
             i={0} j={0}
@@ -34,21 +36,27 @@ export class Game extends Component {
         })}
 
       </div>
-
+      <ul>
+        <li><strong>Supply:</strong> {supply}</li>
+      </ul>
       <code>
         {JSON.stringify(this.props.board, null, 4)}
       </code>
     </div>;
   }
 
-  _connectTile(props, i, j) {
-    this.props.dispatch(addTile({
+  _connectTile(tile, i, j) {
+    const {dispatch, board} = this.props;
+    const {id, corners, rotation} = tile;
+
+    dispatch(boardAddTile({
       i, j,
-      id: props.id,
-      corners: props.corners,
-      rotation: props.rotation,
+      id,
+      corners,
+      rotation,
     }));
-    console.log(JSON.stringify(props.corners), props.rotation, i, j);
+
+    dispatch(applyCatalysts(getCatalysts(board, tile, i, j)));
   }
 
   _setCurrentTile(tile) {
@@ -59,7 +67,7 @@ export class Game extends Component {
 }
 
 export function mapToProps(state) {
-  return state;
+  return state.game;
 }
 
 export default connect(mapToProps)(Game);
