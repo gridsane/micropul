@@ -4,14 +4,15 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import {connect} from 'react-redux';
 import Board from './Board';
 import DragTile from './DragTile';
-import {getPossibleConnections, getCatalysts} from '../domain/board';
-import {boardAddTile, applyCatalysts} from '../actions/game';
+import {getPossibleConnections, getCatalysts, getGroup} from '../domain/board';
+import {boardAddTile, applyCatalysts, handAddTile} from '../actions/game';
 
 @DragDropContext(HTML5Backend)
 export class Game extends Component {
 
   state = {
     possibleConnections: [],
+    group: [],
   };
 
   render() {
@@ -21,8 +22,10 @@ export class Game extends Component {
       <Board
         tileSize={48}
         tiles={board}
+        group={this.state.group}
         placeholders={this.state.possibleConnections}
-        onTileConnect={::this._connectTile}/>
+        onTileConnect={::this._connectTile}
+        onCornerClick={::this._cornerClick}/>
 
       <div style={{overflow: 'auto'}}>
 
@@ -37,12 +40,25 @@ export class Game extends Component {
 
       </div>
       <ul>
-        <li><strong>Supply:</strong> {supply}</li>
+        <li>
+          <strong>Supply:</strong> {supply}
+          <button onClick={::this._supplyToHand}>to hand</button>
+        </li>
       </ul>
       <code>
         {JSON.stringify(this.props.board, null, 4)}
       </code>
     </div>;
+  }
+
+  _supplyToHand() {
+    this.props.dispatch(handAddTile(1));
+  }
+
+  _cornerClick(tile, cornerIndex) {
+    const group = getGroup(this.props.board, tile.i, tile.j, cornerIndex);
+    console.log(group);
+    this.setState({group});
   }
 
   _connectTile(tile, i, j) {

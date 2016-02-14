@@ -7,7 +7,7 @@ const initialState = {
   gameId: null,
   playerId: null,
   stones: 3,
-  supply: 0,
+  supply: 6,
   hand: [],
   isFinished: false,
   isWaiting: false,

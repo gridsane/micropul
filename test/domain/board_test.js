@@ -312,4 +312,116 @@ describe('Board logic', () => {
 
   });
 
+  it('returns board corners', () => {
+    const tiles = [
+      {
+        id: 1,
+        i: 0, j: 0,
+        corners: [[1], [1], [3], [1]],
+        rotation: 0,
+      },
+      {
+        id: 2,
+        i: 1, j: 1,
+        corners: [[1], [1], [3], [1]],
+        rotation: 0,
+      },
+      {
+        id: 3,
+        i: 0, j: 1,
+        corners: [[1], [1], [3], [1]],
+        rotation: 1,
+      },
+    ];
+
+    expect(board.getCorners(tiles)).toEqual([
+      {i: 0, j: 0, micropul: 1, corner: 0, tile: {id: 1, i: 0, j: 0}},
+      {i: 0, j: 1, micropul: 1, corner: 1, tile: {id: 1, i: 0, j: 0}},
+      {i: 1, j: 1, micropul: null, corner: 2, tile: {id: 1, i: 0, j: 0}},
+      {i: 1, j: 0, micropul: 1, corner: 3, tile: {id: 1, i: 0, j: 0}},
+
+      {i: 2, j: 2, micropul: 1, corner: 0, tile: {id: 2, i: 1, j: 1}},
+      {i: 2, j: 3, micropul: 1, corner: 1, tile: {id: 2, i: 1, j: 1}},
+      {i: 3, j: 3, micropul: null, corner: 2, tile: {id: 2, i: 1, j: 1}},
+      {i: 3, j: 2, micropul: 1, corner: 3, tile: {id: 2, i: 1, j: 1}},
+
+      {i: 0, j: 2, micropul: 1, corner: 3, tile: {id: 3, i: 0, j: 1}},
+      {i: 0, j: 3, micropul: 1, corner: 0, tile: {id: 3, i: 0, j: 1}},
+      {i: 1, j: 3, micropul: 1, corner: 1, tile: {id: 3, i: 0, j: 1}},
+      {i: 1, j: 2, micropul: null, corner: 2, tile: {id: 3, i: 0, j: 1}},
+    ]);
+
+  });
+
+  it('returns micropul groups in a single tile', () => {
+
+    const tiles = [
+      {
+        id: 1,
+        i: 0, j: 0,
+        corners: [[1], [1], [3], [1]],
+      },
+    ];
+
+    // 1 1
+    // 1 3
+
+    expect(board.getGroup(tiles, 0, 0, 0)).toEqual([
+      {i: 0, j: 0, corner: 3},
+      {i: 0, j: 0, corner: 0},
+      {i: 0, j: 0, corner: 1},
+    ]);
+
+    expect(board.getGroup(tiles, 0, 0, 3)).toEqual([
+      {i: 0, j: 0, corner: 0},
+      {i: 0, j: 0, corner: 3},
+      {i: 0, j: 0, corner: 1},
+    ]);
+
+  });
+
+  it('returns micropul groups with connections', () => {
+
+    const tiles = [
+      {
+        i: 0, j: 0,
+        corners: [[1], [1], [3], [1]],
+      },
+      {
+        i: 0, j: 1,
+        corners: [[1], [3], [2], [0]],
+      },
+      {
+        i: 1, j: 1,
+        corners: [[4], [2], [2], [0]],
+      },
+      {
+        i: 1, j: 0,
+        corners: [[1], [2], [5], [2]],
+      },
+    ];
+
+    // 1 1 | 1 3
+    // 1 3 | 0 2
+
+    // - -   - -
+    // 1 2 | 3 2
+    // 2 5 | 0 2
+
+    expect(board.getGroup(tiles, 0, 0, 0)).toEqual([
+      {i: 0, j: 0, corner: 3},
+      {i: 1, j: 0, corner: 0},
+      {i: 0, j: 0, corner: 0},
+      {i: 0, j: 0, corner: 1},
+      {i: 0, j: 1, corner: 0},
+    ]);
+
+    expect(board.getGroup(tiles, 1, 1, 2)).toEqual([
+      {i: 1, j: 1, corner: 1},
+      {i: 1, j: 1, corner: 2},
+      {i: 0, j: 1, corner: 2},
+    ]);
+
+  });
+
 });

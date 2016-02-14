@@ -18,8 +18,10 @@ export function applyCatalysts(catalysts) {
       switch (catalyst) {
         case 3:
           dispatch(refillSupply(1));
+          break;
         case 4:
           dispatch(refillSupply(2));
+          break;
         case 5:
           // play again
         default:

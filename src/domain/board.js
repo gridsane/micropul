@@ -1,11 +1,11 @@
 export function canConnect(tiles, tile, i, j) {
-  return 0 < getConnectionTiles(tiles, tile, i, j).reduce((cost, def) => {
+  return 0 < getConnectionTiles(tiles, i, j).reduce((cost, def) => {
     return cost + getSideConnectionCost(def.tile, tile, def.side);
   }, 0);
 }
 
 export function getCatalysts(tiles, tile, i, j) {
-  const catalysts = getConnectionTiles(tiles, tile, i, j).reduce((catalysts, def) => {
+  const catalysts = getConnectionTiles(tiles, i, j).reduce((catalysts, def) => {
     const cornersA = getTileSideCorners(def.tile, def.side);
     const cornersB = getTileSideCorners(tile, getOppositeSide(def.side)).reverse();
 
@@ -67,11 +67,71 @@ export function getPossibleConnections(tiles, tile) {
   }, []);
 }
 
+export function getCorners(tiles) {
+
+  return tiles.reduce((acc, tile) => {
+    const imap = [tile.i*2, tile.i*2, tile.i*2 + 1, tile.i*2 + 1];
+    const jmap = [tile.j*2, tile.j*2 + 1, tile.j*2 + 1, tile.j*2];
+    const rotation = tile.rotation || 0;
+    rotateCorners(tile.corners, rotation).forEach((corner, cornerIndex) => {
+      acc.push({
+        i: imap[cornerIndex],
+        j: jmap[cornerIndex],
+        corner: getCornerIndex(cornerIndex - rotation),
+        micropul: getCornerMicropuls(corner)[0] || null,
+        tile: {id: tile.id, i: tile.i, j: tile.j},
+      });
+    });
+
+    return acc;
+  }, []);
+}
+
+export function getGroup(tiles, i, j, cornerIndex) {
+  const corners = getCorners(tiles);
+  const corner = corners.find((c) => c.tile.i === i && c.tile.j === j && c.corner === cornerIndex);
+
+  return Object.values(getCornerGroup(corners, corner, {}));
+}
+
+function getCornerGroup(corners, corner, group) {
+  [{di: 1, dj: 0},
+  {di: 0, dj: 1},
+  {di: -1, dj: 0},
+  {di: 0, dj: -1}].forEach((d) => {
+    const pos = {i: corner.i + d.di, j: corner.j + d.dj};
+    const hash = posHash(pos.i, pos.j);
+    const targetCorner = corners.find((c) => c.i === pos.i && c.j === pos.j && c.micropul === corner.micropul && c.micropul !== null);
+    if (targetCorner && !group[hash]) {
+      group[hash] = {
+        i: targetCorner.tile.i,
+        j: targetCorner.tile.j,
+        corner: targetCorner.corner,
+      };
+      group = getCornerGroup(corners, targetCorner, group);
+    }
+  });
+
+  return group;
+}
+
+function getCornerIndex(index) {
+  if (index < 0) {
+    return 4 + index;
+  }
+
+  if (index > 3) {
+    return index - 4;
+  }
+
+  return index;
+}
+
 function posHash(i, j) {
   return i + '_' + j;
 }
 
-function getConnectionTiles(tiles, tile, i, j) {
+function getConnectionTiles(tiles, i, j) {
   return tiles.reduce((affectedTiles, t) => {
     let side = null;
 

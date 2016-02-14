@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import Radium from 'radium';
+import {curried} from '../utils';
 
 @Radium
 export default class Tile extends Component {
@@ -14,6 +15,7 @@ export default class Tile extends Component {
 
   static defaultProps = {
     size: 64,
+    highlightedCorners: [],
   };
 
   render() {
@@ -23,7 +25,33 @@ export default class Tile extends Component {
     return <svg viewBox="0 0 64 64" style={styles.container}>
         <rect x={0} y={0} width={64} height={64} style={styles.tile} />
         {this.renderCorners(corners)}
+        {this.renderHightlight(this.props.highlightedCorners)}
     </svg>;
+  }
+
+  renderHightlight(highlightedCorners) {
+    const cornerIndexCoordinates = [
+      [0, 0],
+      [0, 1],
+      [1, 1],
+      [1, 0],
+    ];
+
+    return <g>{highlightedCorners.map((h) => {
+      const cornerIndex = h.corner;
+
+      const [i, j] = cornerIndexCoordinates[cornerIndex];
+      const [x, y] = [j * 32, i * 32];
+
+      return <rect
+        width={32}
+        height={32}
+        opacity={.3}
+        fill="#f00"
+        key={'h' + cornerIndex}
+        transform={t(translate(x, y))} />;
+
+    })}</g>;
   }
 
   renderCorners(corners) {
@@ -48,11 +76,16 @@ export default class Tile extends Component {
 
       return <g
         key={cornerIndex}
+        onClick={curried(::this._cornerClick, cornerIndex)}
         transform={t(translate(x, y), rotate(90 * cornerIndex, 16, 16))}>
         {elements[values.join('')]}
       </g>;
 
     })}</g>;
+  }
+
+  _cornerClick(cornerIndex) {
+    this.props.onCornerClick(this.props, cornerIndex);
   }
 
   getStyles() {

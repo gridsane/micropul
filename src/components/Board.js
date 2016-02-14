@@ -18,11 +18,18 @@ export default class Board extends Component {
   };
 
   render() {
-    const {tiles, placeholders, onTileConnect, tileSize} = this.props;
+    const {tiles, placeholders, onTileConnect, tileSize, group} = this.props;
 
     return <div style={styles.container}>
       {tiles.map((tile, i) => {
-        return <Tile key={`tile-${i}`} {...tile} size={tileSize} />;
+        return <Tile
+          key={`tile-${i}`}
+          {...tile}
+          highlightedCorners={group.filter((g) => {
+            return g.i === tile.i && g.j === tile.j;
+          })}
+          onCornerClick={::this.props.onCornerClick}
+          size={tileSize} />;
       })}
 
       {placeholders.map((placeholder, i) => {
