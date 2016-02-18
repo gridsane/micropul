@@ -34,11 +34,15 @@ export default function game(state = initialState, action) {
 const handlers = {
   [actions.GAME_START]: (state, action) => {
     const startedAt = new Date();
-    const tilesOnHands = getRandomTiles(state, action.playersIds.length * 6);
+    const tilesOnHands = getRandomTiles({
+      board: [],
+      players: [],
+    }, action.playersIds.length * 6);
 
-    return update(state, {
-      gameId: {$set: getSecureToken()},
-      players: {$set: action.playersIds.map((id, index) => {
+    return {
+      gameId: getSecureToken(),
+      playerId: state.playerId,
+      players: action.playersIds.map((id, index) => {
         const startHandIndex = Math.max(0, (index * 6) - 1);
         return {
           id,
@@ -46,14 +50,13 @@ const handlers = {
           hand: tilesOnHands.slice(startHandIndex, startHandIndex + 6),
           stones: [],
         };
-      })},
-      currentTurn: {$set: action.playersIds[0]},
-      board: {$set: [{id: 0, i: 0, j: 0, rotation: 0}]},
-      startedAt: {$set: startedAt},
-      updatedAt: {$set: startedAt},
-    });
-
-    return state;
+      }),
+      currentTurn: action.playersIds[0],
+      board: [{id: 0, i: 0, j: 0, rotation: 0}],
+      isFinished: false,
+      startedAt: startedAt,
+      updatedAt: startedAt,
+    };
   },
 
   [actions.GAME_PLACE_STONE]: (state, action) => {

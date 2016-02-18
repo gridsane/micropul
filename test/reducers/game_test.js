@@ -4,7 +4,10 @@ import * as actions from '../../src/actions/game';
 describe('Game reducer', () => {
 
   it('starts the game', () => {
-    const state = reducer(undefined, actions.start(['id1', 'id2']));
+    const state = reducer({
+      playerId: 'id1',
+      isFinished: true,
+    }, actions.start(['id1', 'id2']));
 
     expect(state.gameId).toNotBe(null);
     expect(state.players.length).toBe(2);
@@ -16,6 +19,8 @@ describe('Game reducer', () => {
     expect(state.board.length).toBe(1);
     expect(state.startedAt).toNotBe(null);
     expect(state.updatedAt).toNotBe(null);
+    expect(state.playerId).toBe('id1');
+    expect(state.isFinished).toBe(false);
   });
 
   it('places a stone', () => {
