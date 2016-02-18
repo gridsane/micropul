@@ -1,89 +1,72 @@
-import React, {Component} from 'react';
-import {DragDropContext} from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import Board from './Board';
-import DragTile from './DragTile';
-import {getPossibleConnections, getCatalysts, getGroup} from '../domain/board';
-import {boardAddTile, applyCatalysts, handAddTile} from '../actions/game';
+import * as game from '../actions/game';
+import SoloGame from './SoloGame';
 
-@DragDropContext(HTML5Backend)
 export class Game extends Component {
 
-  state = {
-    possibleConnections: [],
-    group: [],
+  static propTypes = {
+    gameState: PropTypes.object.isRequired,
+    player: PropTypes.string.isRequired,
+    opponents: PropTypes.array.isRequired,
+    isPlayerTurn: PropTypes.bool.isRequired,
+    board: PropTypes.array.isRequired,
+    isFinished: PropTypes.bool.isRequired,
+    isSolo: PropTypes.bool,
   };
 
+  static defaultProps = {
+    isSolo: true,
+  };
+
+  componentWillMount() {
+  }
+
   render() {
-    const {board, hand, supply} = this.props;
+    const {player, opponents, isPlayerTurn, board, isFinished} = this.props;
 
-    return <div>
-      <Board
-        tileSize={48}
-        tiles={board}
-        group={this.state.group}
-        placeholders={this.state.possibleConnections}
-        onTileConnect={::this._connectTile}
-        onCornerClick={::this._cornerClick}/>
-
-      <div style={{overflow: 'auto'}}>
-
-        {hand.map((tile, index) => {
-          return <DragTile
-            key={index}
-            i={0} j={0}
-            rotation={0}
-            onDragStart={::this._setCurrentTile}
-            {...tile} />;
-        })}
-
-      </div>
-      <ul>
-        <li>
-          <strong>Supply:</strong> {supply}
-          <button onClick={::this._supplyToHand}>to hand</button>
-        </li>
-      </ul>
-      <code>
-        {JSON.stringify(this.props.board, null, 4)}
-      </code>
-    </div>;
+    return <SoloGame {...{player, opponents, isPlayerTurn, board, isFinished}}
+      onTileConnect={::this._connectTile}
+      onPlaceStone={::this._placeStone}
+      onSkipTurn={::this._skipTurn}
+      onRefillHand={::this._refillHand}
+    />;
   }
 
-  _supplyToHand() {
-    this.props.dispatch(handAddTile(1));
-  }
-
-  _cornerClick(tile, cornerIndex) {
-    const group = getGroup(this.props.board, tile.i, tile.j, cornerIndex);
-    console.log(group);
-    this.setState({group});
-  }
-
-  _connectTile(tile, i, j) {
-    const {dispatch, board} = this.props;
-    const {id, corners, rotation} = tile;
-
-    dispatch(boardAddTile({
-      i, j,
-      id,
-      corners,
+  _connectTile(tileId, rotation, i, j) {
+    this.props.dispatch(game.connectTile(
+      this.props.gameState.playerId,
+      tileId,
       rotation,
-    }));
-
-    dispatch(applyCatalysts(getCatalysts(board, tile, i, j)));
+      i,
+      j
+    ));
   }
 
-  _setCurrentTile(tile) {
-    this.setState({
-      possibleConnections: getPossibleConnections(this.props.board, tile),
-    });
+  _placeStone(i, j) {
+    this.props.dispatch(game.placeStone(this.props.gameState.playerId, i, j));
   }
+
+  _skipTurn() {
+    this.props.dispatch(game.skipTurn(this.props.gameState.playerId));
+  }
+
+  _refillHand() {
+    this.props.dispatch(game.refillHand(this.props.gameState.playerId));
+  }
+
 }
 
 export function mapToProps(state) {
-  return state.game;
+  const gameState = state.game;
+
+  return {
+    player: gameState.players.find((p) => p.id = gameState.playerId),
+    opponents: gameState.players.filter((p) => p.id !== gameState.playerId),
+    isPlayerTurn: gameState.currentTurn === gameState.playerId,
+    board: gameState.board,
+    isFinished: gameState.isFinished,
+  };
 }
 
 export default connect(mapToProps)(Game);

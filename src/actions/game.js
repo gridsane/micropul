@@ -1,32 +1,25 @@
 import * as types from './actionsTypes';
 
-export function boardAddTile(tile) {
-  return {type: types.BOARD_ADD_TILE, tile};
+export function start(playersIds) {
+  return {type: types.GAME_START, playersIds};
 }
 
-export function refillSupply(count = 1) {
-  return {type: types.SUPPLY_REFILL, count};
+export function connectTile(playerId, tileId, rotation, i, j) {
+  return {type: types.GAME_CONNECT_TILE, playerId, tileId, rotation, i, j};
 }
 
-export function handAddTile() {
-  return {type: types.HAND_ADD_TILE};
+export function refillHand(playerId, count = 1) {
+  return {type: types.GAME_REFILL_HAND, playerId, count};
 }
 
-export function applyCatalysts(catalysts) {
-  return (dispatch) => {
-    catalysts.forEach((catalyst) => {
-      switch (catalyst) {
-        case 3:
-          dispatch(refillSupply(1));
-          break;
-        case 4:
-          dispatch(refillSupply(2));
-          break;
-        case 5:
-          // play again
-        default:
-          break;
-      }
-    });
-  };
+export function placeStone(playerId, i, j, corner) {
+  return {type: types.GAME_PLACE_STONE, playerId, i, j, corner};
+}
+
+export function skipTurn(playerId) {
+  return {type: types.GAME_SKIP_TURN, playerId};
+}
+
+export function mergeState(newState) {
+  return {type: types.GAME_MERGE_STATE, newState};
 }

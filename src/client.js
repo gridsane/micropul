@@ -1,15 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
-import Game from './components/Game';
+import Application from './components/Application';
 import store from './store';
+
+window.actions = require('./actions/game');
+window.store = store;
 
 ReactDOM.render(
   <div>
     <Provider store={store}>
-      <div>
-        <Game />
-      </div>
+        <Application />
     </Provider>
   </div>,
   document.getElementById('root')
