@@ -106,15 +106,9 @@ const handlers = {
       : {currentTurn: setNextTurn(state.currentTurn, state.players)};
 
     let nextSupply = player.supply;
-    // refill supply by 1
-    if (-1 !== catalysts.indexOf(3)) {
-      nextSupply = nextSupply + 1;
-    }
-
-    // refill supply by 2
-    if (-1 !== catalysts.indexOf(4)) {
-      nextSupply = nextSupply + 2;
-    }
+    nextSupply = nextSupply
+      + catalysts.filter(c => c === 3).length
+      + (catalysts.filter(c => c === 4).length * 2);
 
     return update(state, {
       board: {$push: [{id: tileId, i, j, rotation}]},

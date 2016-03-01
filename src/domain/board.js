@@ -5,20 +5,28 @@ export function canConnect(tiles, tile, i, j) {
 }
 
 export function getCatalysts(tiles, tile, i, j) {
+  let activatedCorners = [];
+
   const catalysts = getConnectionTiles(tiles, i, j).reduce((catalysts, def) => {
-    const cornersA = getTileSideCorners(def.tile, def.side);
-    const cornersB = getTileSideCorners(tile, getOppositeSide(def.side)).reverse();
+    const cornersA = getIndexedTileSideCorners(def.tile, def.side);
+    const cornersB = getIndexedTileSideCorners(tile, getOppositeSide(def.side)).reverse();
 
-    cornersA.forEach((cornerA, i) => {
-      const cornerB = cornersB[i];
-      const aMicropuls = getCornerMicropuls(cornerA);
-      const bMicropuls = getCornerMicropuls(cornerB);
-      const aCatalysts = getCornerCatalysts(cornerA);
-      const bCatalysts = getCornerCatalysts(cornerB);
+    cornersA.forEach((cornerA, index) => {
+      const cornerB = cornersB[index];
 
-      if (aMicropuls.length > 0 && bCatalysts.length > 0) {
+      const idA = arg2str(def.tile.i, def.tile.j, cornerA.index);
+      const idB = arg2str(i, j, cornerB.index);
+
+      const aMicropuls = getCornerMicropuls(cornerA.values);
+      const bMicropuls = getCornerMicropuls(cornerB.values);
+      const aCatalysts = getCornerCatalysts(cornerA.values);
+      const bCatalysts = getCornerCatalysts(cornerB.values);
+
+      if (aMicropuls.length > 0 && bCatalysts.length > 0 && activatedCorners.indexOf(idB) === -1) {
+        activatedCorners.push(idB);
         catalysts.push(...bCatalysts);
-      } else if(bMicropuls.length > 0 && aCatalysts.length > 0) {
+      } else if(bMicropuls.length > 0 && aCatalysts.length > 0 && activatedCorners.indexOf(idB) === -1) {
+        activatedCorners.push(idA);
         catalysts.push(...aCatalysts);
       }
     });
@@ -26,19 +34,20 @@ export function getCatalysts(tiles, tile, i, j) {
     return catalysts;
   }, []).sort();
 
-  return [...new Set(catalysts)];
+  return catalysts;
+  // return [...new Set(catalysts)];
 }
 
 export function getFreePositions(tiles) {
   const occupied = tiles.map((tile) => {
-    return posHash(tile.i, tile.j);
+    return arg2str(tile.i, tile.j);
   });
 
   return tiles.reduce((free, tile) => {
     const {i, j} = tile;
     [1, -1].forEach((d) => {
-      const ih = posHash(i + d, j);
-      const jh = posHash(i, j + d);
+      const ih = arg2str(i + d, j);
+      const jh = arg2str(i, j + d);
 
       if (occupied.indexOf(ih) === -1) {
         free.push({i: i + d, j});
@@ -100,7 +109,7 @@ function getCornerGroup(corners, corner, group) {
   {di: -1, dj: 0},
   {di: 0, dj: -1}].forEach((d) => {
     const pos = {i: corner.i + d.di, j: corner.j + d.dj};
-    const hash = posHash(pos.i, pos.j);
+    const hash = arg2str(pos.i, pos.j);
     const targetCorner = corners.find((c) => c.i === pos.i && c.j === pos.j && c.micropul === corner.micropul && c.micropul !== null);
     if (targetCorner && !group[hash]) {
       group[hash] = {
@@ -128,8 +137,8 @@ function getCornerIndex(index) {
   return index;
 }
 
-function posHash(i, j) {
-  return i + '_' + j;
+function arg2str(...args) {
+  return args.join('_');
 }
 
 function getConnectionTiles(tiles, i, j) {
@@ -197,10 +206,16 @@ function getTileSideCorners(tile, side) {
   return getSideCorners(rotateCorners(tile.corners, tile.rotation), side);
 }
 
-export function getSideCorners(corners, side) {
-  const c = corners;
-  c.push(c[0]);
-  c.push(c[1]);
+function getIndexedTileSideCorners(tile, side) {
+  const indexedCorners = rotateCorners(tile.corners, tile.rotation).map((c, i) => {
+    return {values: c, index: i};
+  });
+  return getSideCorners(indexedCorners, side);
+}
+
+function getSideCorners(corners, side) {
+  let c = corners;
+  c.push(...[c[0], c[1]]);
 
   return c.slice(side, side + 2);
 }

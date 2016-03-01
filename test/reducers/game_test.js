@@ -134,9 +134,37 @@ describe('Game reducer', () => {
     expect(nextState.updatedAt).toNotBe(startState.updatedAt);
   });
 
-  // @todo: refills supply with not greater count then free tiles
-  // @todo: applies multiple 'refill supply' catalysts (examine the rules)
-  // @todo: applies multiple 'extra turn' catalysts (examine the rules)
+  it('applies multiple "refill supply" catalysts', () => {
+
+    const startState = reducer(undefined, actions.start(['id1', 'id2']));
+
+    // fill hands with known tiles
+    startState.players[0].hand = [{id: 43, rotation: 0}, {id: 27, rotation: 3}];
+    startState.players[1].hand = [{id: 36, rotation: 0}];
+
+    // (0)
+    // 1 1 | 1 2 (36)
+    // 2 2 | 2 1
+    // - -
+    // 2 2   3 3  (27, rotation: 3)
+    // 2 2   2 0
+    // (43)
+
+    let nextState = reducer(startState, actions.connectTile('id1', 43, 0, 1, 0));
+    nextState = reducer(nextState, actions.connectTile('id2', 36, 0, 0, 1));
+    expect(nextState.players[0].supply).toBe(0);
+    expect(nextState.players[1].supply).toBe(0);
+
+    nextState = reducer(nextState, actions.connectTile('id1', 27, 3, 1, 1));
+    expect(nextState.board.length).toBe(4);
+    expect(nextState.players[0].supply).toBe(2);
+    expect(nextState.players[1].supply).toBe(0);
+
+  });
+
+  it('applies multiple "extra turn" catalysts', () => {
+    // @todo
+  });
 
   it('refills a hand', () => {
     const startState = reducer(undefined, actions.start(['id1', 'id2']));
@@ -202,6 +230,8 @@ describe('Game reducer', () => {
     expect({...nextState, currentTurn: null}).toEqual({...startState, currentTurn: null});
   });
 
+  // @todo: refills supply with not greater count then free tiles
+  // @todo: 'big' tiles catalysts treated as one catalyst (woaaa)
   // @todo: finishes a game when last tile connected
   // @todo: finishes a game when last stone placed (examine the rules)
   // @todo: calculates a score when game was finished

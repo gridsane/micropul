@@ -1,6 +1,6 @@
 import * as board from '../../src/domain/board';
 
-describe('Board logic', () => {
+describe('Board', () => {
 
   it('returns 48 possible tiles', () => {
     expect(board.possibleTiles.length).toBe(48);
@@ -15,18 +15,6 @@ describe('Board logic', () => {
     expect(board.rotateCorners(corners, 2)).toEqual([[3], [4], [1], [2]]);
     expect(board.rotateCorners(corners, 3)).toEqual([[2], [3], [4], [1]]);
     expect(board.rotateCorners(corners, 4)).toEqual(corners);
-
-  });
-
-  it('gets corners on particular side', () => {
-
-    const corners = [[1], [2], [3], [4]];
-
-    expect(board.getSideCorners(corners, 0)).toEqual([[1], [2]]);
-    expect(board.getSideCorners(corners, 1)).toEqual([[2], [3]]);
-    expect(board.getSideCorners(corners, 2)).toEqual([[3], [4]]);
-    expect(board.getSideCorners(corners, 3)).toEqual([[4], [1]]);
-    expect(board.getSideCorners(corners, 4)).toEqual([[1], [2]]);
 
   });
 
@@ -251,7 +239,45 @@ describe('Board logic', () => {
     // 0 3   2   0
 
     const tile2 = {corners: [[1], [5], [0], [2]], rotation: 0};
-    expect(board.getCatalysts(tiles, tile2, 1, 1)).toEqual([3, 4, 5]);
+    expect(board.getCatalysts(tiles, tile2, 1, 1)).toEqual([3, 4, 5, 5]);
+
+  });
+
+  it('returns multiple activated catalysts of a same type', () => {
+    const tiles = [
+      {
+        i: 0, j: 0,
+        corners: [[1], [0], [1], [2]],
+        rotation: 0,
+      },
+      {
+        i: 0, j: 1,
+        corners: [[0], [0], [4], [1]],
+        rotation: 0,
+      },
+      {
+        i: 1, j: 0,
+        corners: [[2], [1], [2], [0]],
+        rotation: 0,
+      },
+    ];
+
+    // 1 0 | 0 0
+    // 2 1 | 1 4
+    // - -
+    // 2 1   3 1
+    // 0 2   2 0
+    const tile1 = {corners: [[3], [1], [0], [2]], rotation: 0};
+    expect(board.getCatalysts(tiles, tile1, 1, 1)).toEqual([3, 4]);
+
+    // 1 0 | 0 0
+    // 2 1 | 1 4
+    // - -
+    // 2 1   1 1
+    // 0 2   4 0
+    const tile2 = {corners: [[1], [1], [0], [4]], rotation: 0};
+    expect(board.getCatalysts(tiles, tile2, 1, 1)).toEqual([4, 4]);
+
 
   });
 
