@@ -166,6 +166,26 @@ describe('Game reducer', () => {
     // @todo
   });
 
+  it('refills supply with not greater count then available tiles', () => {
+    const startState = reducer(undefined, actions.start(['id1', 'id2']));
+
+    startState.players[0].hand = (new Array(24)).fill(1).map((_, i) => {
+      return {id: i + 1, rotation: 0};
+    });
+    startState.players[0].supply = 1;
+    startState.players[1].hand = (new Array(21)).fill(1).map((_, i) => {
+      return {id: i + 25, rotation: 0};
+    });
+
+    // free tiles is 1 (1 on the board, 45 on hands, 1 in the first player supply)
+    // 1 1 | 1 1 (22)
+    // 2 2 | 4 0
+
+    const nextState = reducer(startState, actions.connectTile('id1', 22, 0, 0, 1));
+    expect(nextState.players[0].supply).toBe(2);
+
+  });
+
   it('refills a hand', () => {
     const startState = reducer(undefined, actions.start(['id1', 'id2']));
 
@@ -230,7 +250,6 @@ describe('Game reducer', () => {
     expect({...nextState, currentTurn: null}).toEqual({...startState, currentTurn: null});
   });
 
-  // @todo: refills supply with not greater count then free tiles
   // @todo: 'big' tiles catalysts treated as one catalyst (woaaa)
   // @todo: finishes a game when last tile connected
   // @todo: finishes a game when last stone placed (examine the rules)

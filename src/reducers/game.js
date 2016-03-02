@@ -105,10 +105,11 @@ const handlers = {
       ? {}
       : {currentTurn: setNextTurn(state.currentTurn, state.players)};
 
-    let nextSupply = player.supply;
-    nextSupply = nextSupply
-      + catalysts.filter(c => c === 3).length
-      + (catalysts.filter(c => c === 4).length * 2);
+    const supplyIncrement = Math.min(
+      getAvailableTilesCount(state),
+      catalysts.filter(c => c === 3).length
+      + (catalysts.filter(c => c === 4).length * 2)
+    );
 
     return update(state, {
       board: {$push: [{id: tileId, i, j, rotation}]},
@@ -121,7 +122,7 @@ const handlers = {
 
             return args;
           }, [])},
-          supply: {$set: nextSupply},
+          supply: {$set: player.supply + supplyIncrement},
         },
       },
       updatedAt: setNow(),
@@ -184,7 +185,7 @@ function getCurrentPlayerIndex(currentTurn, players) {
   return ids.indexOf(currentTurn);
 }
 
-function getRandomTiles(state, count) {
+function getClosedTiles(state) {
   const inGameTilesIds = [
     ...state.board.map((t) => t.id),
     ...state.players.reduce((acc, p) => {
@@ -193,13 +194,21 @@ function getRandomTiles(state, count) {
     }, []),
   ];
 
-  const remainingTiles = possibleTiles.filter((t) => {
+  return possibleTiles.filter((t) => {
     return inGameTilesIds.indexOf(t.id) === -1;
   });
+}
 
-  return shuffle(remainingTiles).slice(0, count).map((t) => {
+function getRandomTiles(state, count) {
+  const closedTiles = getClosedTiles(state);
+  return shuffle(closedTiles).slice(0, count).map((t) => {
     return {id: t.id, rotation: 0};
   });
+}
+
+function getAvailableTilesCount(state) {
+  const supply = state.players.reduce((acc, p) => acc + p.supply, 0);
+  return getClosedTiles(state).length - supply;
 }
 
 function transformTile(tile) {
