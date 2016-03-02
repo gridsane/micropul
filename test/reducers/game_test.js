@@ -15,7 +15,7 @@ describe('Game reducer', () => {
     expect([...new Set(state.players[1].hand)].length).toBe(6);
     expect(state.players[0].supply).toBe(0);
     expect(state.players[1].supply).toBe(0);
-    expect(state.currentTurn).toBe('id1');
+    expect(state.turnQueue).toEqual(['id1']);
     expect(state.board.length).toBe(1);
     expect(state.startedAt).toNotBe(null);
     expect(state.updatedAt).toNotBe(null);
@@ -29,11 +29,11 @@ describe('Game reducer', () => {
 
     const player = nextState.players.find((p) => p.id === 'id1');
     expect(player.stones).toEqual([{i: 0, j: 0, corner: 1}]);
-    expect(nextState.currentTurn).toBe('id2');
+    expect(nextState.turnQueue).toEqual(['id2']);
     expect(nextState.updatedAt).toNotBe(startState.updatedAt);
   });
 
-  it('not places a stone out of turn', () => {
+  it('do not places a stone out of turn', () => {
     const startState = reducer(undefined, actions.start(['id1', 'id2']));
     const nextState = reducer(startState, actions.placeStone('id2', 0, 0, 1));
     expect(startState).toEqual(nextState);
@@ -52,7 +52,7 @@ describe('Game reducer', () => {
       {id: 0, i: 0, j: 0, rotation: 0},
       {id: 2, i: 0, j: 1, rotation: 0},
     ]);
-    expect(nextState.currentTurn).toBe('id2');
+    expect(nextState.turnQueue).toEqual(['id2']);
     expect(nextState.players[0].hand.length).toBe(0);
     expect(nextState.players[0].supply).toBe(0);
     expect(nextState.updatedAt).toNotBe(startState.updatedAt);
@@ -99,7 +99,7 @@ describe('Game reducer', () => {
     startState.players[1].hand = [];
 
     const nextState = reducer(startState, actions.connectTile('id1', 4, 0, 0, 1));
-    expect(nextState.currentTurn).toBe('id1');
+    expect(nextState.turnQueue).toEqual(['id1']);
     expect(nextState.board.length).toBe(2);
     expect(nextState.updatedAt).toNotBe(startState.updatedAt);
   });
@@ -112,7 +112,7 @@ describe('Game reducer', () => {
     startState.players[1].hand = [];
 
     const nextState = reducer(startState, actions.connectTile('id1', 10, 3, 1, 0));
-    expect(nextState.currentTurn).toBe('id2');
+    expect(nextState.turnQueue).toEqual(['id2']);
     expect(nextState.board.length).toBe(2);
     expect(nextState.players[0].supply).toBe(1);
     expect(nextState.players[1].supply).toBe(0);
@@ -127,7 +127,7 @@ describe('Game reducer', () => {
     startState.players[1].hand = [];
 
     const nextState = reducer(startState, actions.connectTile('id1', 22, 0, 0, 1));
-    expect(nextState.currentTurn).toBe('id2');
+    expect(nextState.turnQueue).toEqual(['id2']);
     expect(nextState.board.length).toBe(2);
     expect(nextState.players[0].supply).toBe(2);
     expect(nextState.players[1].supply).toBe(0);
@@ -135,7 +135,6 @@ describe('Game reducer', () => {
   });
 
   it('applies multiple "refill supply" catalysts', () => {
-
     const startState = reducer(undefined, actions.start(['id1', 'id2']));
 
     // fill hands with known tiles
@@ -159,11 +158,45 @@ describe('Game reducer', () => {
     expect(nextState.board.length).toBe(4);
     expect(nextState.players[0].supply).toBe(2);
     expect(nextState.players[1].supply).toBe(0);
-
   });
 
   it('applies multiple "extra turn" catalysts', () => {
-    // @todo
+    const startState = reducer(undefined, actions.start(['id1', 'id2']));
+
+    // fill hands with known tiles
+    startState.players[0].hand = [{id: 34, rotation: 0}, {id: 21, rotation: 1}];
+    startState.players[1].hand = [{id: 7, rotation: 0}];
+
+    // 2 1 0 5 // 5
+    // (0) 1 1 | 1 0 (34)
+    //     2 2 | 3 2
+    //           - -
+    //     5 2   5 2 (7)
+    //     0 3   2 1
+    // (21, rotation: 1)
+
+    let nextState = reducer(startState, actions.connectTile('id1', 34, 0, 0, 1));
+    expect(nextState.board.length).toBe(2);
+    nextState = reducer(nextState, actions.connectTile('id2', 7, 0, 1, 1));
+    expect(nextState.board.length).toBe(3);
+
+    nextState = reducer(nextState, actions.connectTile('id1', 21, 1, 1, 0));
+    expect(nextState.board.length).toBe(4);
+    expect(nextState.turnQueue).toEqual(['id1', 'id1']);
+  });
+
+  it('follows turn queue', () => {
+    const startState = reducer(undefined, actions.start(['id1', 'id2']));
+    startState.players[0].supply = 2;
+    startState.turnQueue = ['id1', 'id1'];
+
+    let nextState = reducer(startState, actions.refillHand('id1', 1));
+    expect(nextState.turnQueue).toEqual(['id1']);
+    expect(nextState.players[0].supply).toBe(1);
+
+    nextState = reducer(nextState, actions.refillHand('id1', 1));
+    expect(nextState.turnQueue).toEqual(['id2']);
+    expect(nextState.players[0].supply).toBe(0);
   });
 
   it('refills supply with not greater count then available tiles', () => {
@@ -195,7 +228,7 @@ describe('Game reducer', () => {
     const nextState = reducer(startState, actions.refillHand('id1', 2));
     expect(nextState.players[0].supply).toBe(0);
     expect([...new Set(nextState.players[0].hand)].length).toBe(8);
-    expect(nextState.currentTurn).toBe('id2');
+    expect(nextState.turnQueue).toEqual(['id2']);
     expect(nextState.updatedAt).toNotBe(startState.updatedAt);
   });
 
@@ -229,7 +262,7 @@ describe('Game reducer', () => {
   it('skips turn', () => {
     const startState = reducer(undefined, actions.start(['id1', 'id2']));
     const nextState = reducer(startState, actions.skipTurn('id1'));
-    expect(nextState.currentTurn).toBe('id2');
+    expect(nextState.turnQueue).toEqual(['id2']);
     expect(nextState.updatedAt).toNotBe(startState.updatedAt);
   });
 
@@ -242,12 +275,12 @@ describe('Game reducer', () => {
   it('partially merges state', () => {
     const startState = reducer(undefined, actions.start(['id1', 'id2']));
     const nextState = reducer(startState, actions.mergeState({
-      currentTurn: 'id2',
+      turnQueue: ['id2'],
     }));
 
     expect(nextState).toNotBe(startState);
-    expect(nextState.currentTurn).toBe('id2');
-    expect({...nextState, currentTurn: null}).toEqual({...startState, currentTurn: null});
+    expect(nextState.turnQueue).toEqual(['id2']);
+    expect({...nextState, turnQueue: ['id1']}).toEqual({...startState, turnQueue: ['id1']});
   });
 
   // @todo: 'big' tiles catalysts treated as one catalyst (woaaa)

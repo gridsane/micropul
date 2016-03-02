@@ -14,7 +14,7 @@ const initialState = {
     //   stones: [{i: 1, j: 1, corner: 0}],
     // },
   ],
-  currentTurn: null, // playerId,
+  turnQueue: [], // [playerId, ...],
   board: [],
   isFinished: false,
   startedAt: null,
@@ -51,7 +51,7 @@ const handlers = {
           stones: [],
         };
       }),
-      currentTurn: action.playersIds[0],
+      turnQueue: [action.playersIds[0]],
       board: [{id: 0, i: 0, j: 0, rotation: 0}],
       isFinished: false,
       startedAt: startedAt,
@@ -62,11 +62,11 @@ const handlers = {
   [actions.GAME_PLACE_STONE]: (state, action) => {
     const {i, j, corner, playerId} = action;
 
-    if (playerId !== state.currentTurn) {
+    if (playerId !== state.turnQueue[0]) {
       return state;
     }
 
-    const playerIndex = getCurrentPlayerIndex(state.currentTurn, state.players);
+    const playerIndex = getCurrentPlayerIndex(state.turnQueue[0], state.players);
 
     return update(state, {
       players: {
@@ -74,7 +74,7 @@ const handlers = {
           stones: {$push: [{i, j, corner}]},
         },
       },
-      currentTurn: setNextTurn(state.currentTurn, state.players),
+      turnQueue: setNextTurn(state.turnQueue, state.players),
       updatedAt: setNow(),
     });
   },
@@ -82,7 +82,7 @@ const handlers = {
   [actions.GAME_CONNECT_TILE]: (state, action) => {
     const {playerId, tileId, rotation, i, j} = action;
 
-    if (playerId !== state.currentTurn) {
+    if (playerId !== state.turnQueue[0]) {
       return state;
     }
 
@@ -102,8 +102,9 @@ const handlers = {
     const catalysts = getCatalysts(boardTiles, tile, i, j);
     // extra turn
     const nextTurn = -1 !== catalysts.indexOf(5)
-      ? {}
-      : {currentTurn: setNextTurn(state.currentTurn, state.players)};
+      ? {turnQueue: {
+          $push: (new Array(catalysts.filter(c => c === 5).length - 1).fill(player.id)),
+        }} : {turnQueue: setNextTurn(state.turnQueue, state.players)};
 
     const supplyIncrement = Math.min(
       getAvailableTilesCount(state),
@@ -132,7 +133,7 @@ const handlers = {
   [actions.GAME_REFILL_HAND]: (state, action) => {
     const {playerId, count} = action;
 
-    if (playerId !== state.currentTurn) {
+    if (playerId !== state.turnQueue[0]) {
       return state;
     }
 
@@ -150,19 +151,19 @@ const handlers = {
           hand: {$push: getRandomTiles(state, Math.min(count, supply))},
         },
       },
-      currentTurn: setNextTurn(state.currentTurn, state.players),
+      turnQueue: setNextTurn(state.turnQueue, state.players),
       updatedAt: setNow(),
     });
   },
   [actions.GAME_SKIP_TURN]: (state, action) => {
     const playerId = action.playerId;
 
-    if (playerId !== state.currentTurn) {
+    if (playerId !== state.turnQueue[0]) {
       return state;
     }
 
     return update(state, {
-      currentTurn: setNextTurn(playerId, state.players),
+      turnQueue: setNextTurn(state.turnQueue, state.players),
       updatedAt: setNow(),
     });
   },
@@ -175,9 +176,14 @@ function setNow() {
   return {$set: new Date()};
 }
 
-function setNextTurn(currentTurn, players) {
+function setNextTurn(queue, players) {
   const ids = players.map((p) => p.id);
-  return {$set: atIndex(ids, ids.indexOf(currentTurn) + 1)};
+
+  if (queue.length > 1) {
+    return {$splice: [[0, 1]]};
+  } else {
+    return {$set: [atIndex(ids, ids.indexOf(queue[0]) + 1)]};
+  }
 }
 
 function getCurrentPlayerIndex(currentTurn, players) {
