@@ -283,8 +283,20 @@ describe('Game reducer', () => {
     expect({...nextState, turnQueue: ['id1']}).toEqual({...startState, turnQueue: ['id1']});
   });
 
-  // @todo: finishes a game when last tile connected
-  // @todo: finishes a game when last stone placed (examine the rules)
+  it('finishes a game when last tile connected', () => {
+    const startState = reducer(undefined, actions.start(['id1', 'id2']));
+
+    startState.board = (new Array(46)).fill(1).map((_, i) => {
+      return {id: i, i: -i, j: 0, rotation: 0};
+    });
+
+    startState.players[0].hand = [{id: 47, rotation: 0}];
+
+    const nextState = reducer(startState, actions.connectTile('id1', 47, 0, 1, 0));
+    expect(nextState.players[0].hand.length).toBe(0);
+    expect(nextState.isFinished).toBe(true);
+  });
+
   // @todo: calculates a score when game was finished
   // @todo: logs actions, including tiles sequences and start state
 

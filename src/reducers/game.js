@@ -12,6 +12,7 @@ const initialState = {
     //   supply: 0,
     //   hand: [{id: tileId, rotation: 0}, ...]
     //   stones: [{i: 1, j: 1, corner: 0}],
+    //   score: 0,
     // },
   ],
   turnQueue: [], // [playerId, ...],
@@ -49,6 +50,7 @@ const handlers = {
           supply: 0,
           hand: tilesOnHands.slice(startHandIndex, startHandIndex + 6),
           stones: [],
+          score: 0,
         };
       }),
       turnQueue: [action.playersIds[0]],
@@ -99,18 +101,23 @@ const handlers = {
       return state;
     }
 
+    const availableTilesCount = getAvailableTilesCount(state);
     const catalysts = getCatalysts(boardTiles, tile, i, j);
-    // extra turn
+
     const nextTurn = -1 !== catalysts.indexOf(5)
       ? {turnQueue: {
           $push: (new Array(catalysts.filter(c => c === 5).length - 1).fill(player.id)),
         }} : {turnQueue: setNextTurn(state.turnQueue, state.players)};
 
     const supplyIncrement = Math.min(
-      getAvailableTilesCount(state),
+      availableTilesCount,
       catalysts.filter(c => c === 3).length
       + (catalysts.filter(c => c === 4).length * 2)
     );
+
+    const isFinished = availableTilesCount > 1
+      ? {}
+      : {isFinished: {$set: true}};
 
     return update(state, {
       board: {$push: [{id: tileId, i, j, rotation}]},
@@ -128,6 +135,7 @@ const handlers = {
       },
       updatedAt: setNow(),
       ...nextTurn,
+      ...isFinished,
     });
   },
   [actions.GAME_REFILL_HAND]: (state, action) => {
