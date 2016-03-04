@@ -283,7 +283,6 @@ describe('Game reducer', () => {
     expect({...nextState, turnQueue: ['id1']}).toEqual({...startState, turnQueue: ['id1']});
   });
 
-  // @todo: 'big' tiles catalysts treated as one catalyst (woaaa)
   // @todo: finishes a game when last tile connected
   // @todo: finishes a game when last stone placed (examine the rules)
   // @todo: calculates a score when game was finished

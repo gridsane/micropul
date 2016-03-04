@@ -277,8 +277,19 @@ describe('Board', () => {
     // 0 2   4 0
     const tile2 = {corners: [[1], [1], [0], [4]], rotation: 0};
     expect(board.getCatalysts(tiles, tile2, 1, 1)).toEqual([4, 4]);
+  });
 
+  it('treats "big" tiles catalysts as one catalyst', () => {
+    const tiles = [
+      {
+        i: 0, j: 0,
+        corners: [[1], [1], [2], [2]],
+        rotation: 0,
+      },
+    ];
 
+    const tile = {corners: [[2,5],[2,5],[2,5],[2,5]], rotation: 0};
+    expect(board.getCatalysts(tiles, tile, 1, 0)).toEqual([5]);
   });
 
   it('returns free positions', () => {

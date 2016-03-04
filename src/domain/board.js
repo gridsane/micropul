@@ -7,15 +7,17 @@ export function canConnect(tiles, tile, i, j) {
 export function getCatalysts(tiles, tile, i, j) {
   let activatedCorners = [];
 
-  const catalysts = getConnectionTiles(tiles, i, j).reduce((catalysts, def) => {
+  return getConnectionTiles(tiles, i, j).reduce((catalysts, def) => {
+    const isTileABig = isBigTile(def.tile);
+    const isTileBBig = isBigTile(tile);
     const cornersA = getIndexedTileSideCorners(def.tile, def.side);
     const cornersB = getIndexedTileSideCorners(tile, getOppositeSide(def.side)).reverse();
 
     cornersA.forEach((cornerA, index) => {
       const cornerB = cornersB[index];
 
-      const idA = arg2str(def.tile.i, def.tile.j, cornerA.index);
-      const idB = arg2str(i, j, cornerB.index);
+      const idA = arg2str(def.tile.i, def.tile.j, isTileABig ? 0 : cornerA.index);
+      const idB = arg2str(i, j, isTileBBig ? 0 : cornerB.index);
 
       const aMicropuls = getCornerMicropuls(cornerA.values);
       const bMicropuls = getCornerMicropuls(cornerB.values);
@@ -33,9 +35,6 @@ export function getCatalysts(tiles, tile, i, j) {
 
     return catalysts;
   }, []).sort();
-
-  return catalysts;
-  // return [...new Set(catalysts)];
 }
 
 export function getFreePositions(tiles) {
@@ -240,6 +239,12 @@ function getCornerCatalysts(corner) {
   return corner.filter((x) => {
     return [3, 4, 5].indexOf(x) !== -1;
   });
+}
+
+function isBigTile(tile) {
+  return tile.corners.slice(1).reduce((isBig, c, i) => {
+    return isBig && tile.corners[i].join() == c.join();
+  }, true);
 }
 
 /*
