@@ -461,4 +461,38 @@ describe('Board', () => {
 
   });
 
+  it('determines a closed group', () => {
+    const tiles = [
+      {
+        i: 0, j: 0,
+        corners: [[1], [1], [3], [1]],
+      },
+      {
+        i: 0, j: 1,
+        corners: [[1], [3], [2], [0]],
+      },
+      {
+        i: 1, j: 1,
+        corners: [[4], [2], [2], [0]],
+      },
+      {
+        i: 1, j: 0,
+        corners: [[1], [2], [5], [2]],
+      },
+    ];
+
+    // 1 1 | 1 3
+    // 1 3 | 0 2
+
+    // - -   - -
+    // 1 2 | 3 2
+    // 2 5 | 0 2
+    const openGroup = board.getGroup(tiles, 0, 0, 0);
+    expect(board.isGroupClosed(tiles, openGroup)).toBe(false);
+
+    const closedGroup = board.getGroup(tiles, 1, 0, 1);
+    expect(board.isGroupClosed(tiles, closedGroup)).toBe(true);
+
+  });
+
 });

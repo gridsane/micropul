@@ -102,14 +102,40 @@ export function getGroup(tiles, i, j, cornerIndex) {
   return Object.values(getCornerGroup(corners, corner, {}));
 }
 
+export function isGroupClosed(tiles, group) {
+  return group.reduce((acc, el) => {
+    const sides = [el.corner - 1 < 0 ? 3 : el.corner - 1, el.corner];
+    return sides.reduce((acc, side) => {
+      const closeTile = tiles.find((t) => {
+        return t.i === el.i + sidesShift[side].di
+          && t.j === el.j + sidesShift[side].dj;
+      });
+
+      return acc && 'undefined' !== typeof(closeTile);
+    }, acc);
+  }, true);
+}
+
+export function rotateCorners(corners, rotation) {
+  const result = [...corners];
+  for (var i = rotation; i > 0; i--) {
+    const a = result.pop();
+    result.unshift(a);
+  }
+
+  return result;
+}
+
 function getCornerGroup(corners, corner, group) {
-  [{di: 1, dj: 0},
-  {di: 0, dj: 1},
-  {di: -1, dj: 0},
-  {di: 0, dj: -1}].forEach((d) => {
+  sidesShift.forEach((d) => {
     const pos = {i: corner.i + d.di, j: corner.j + d.dj};
     const hash = arg2str(pos.i, pos.j);
-    const targetCorner = corners.find((c) => c.i === pos.i && c.j === pos.j && c.micropul === corner.micropul && c.micropul !== null);
+    const targetCorner = corners.find((c) => {
+      return c.i === pos.i
+        && c.j === pos.j
+        && c.micropul === corner.micropul
+        && c.micropul !== null;
+    });
     if (targetCorner && !group[hash]) {
       group[hash] = {
         i: targetCorner.tile.i,
@@ -219,16 +245,6 @@ function getSideCorners(corners, side) {
   return c.slice(side, side + 2);
 }
 
-export function rotateCorners(corners, rotation) {
-  const result = [...corners];
-  for (var i = rotation; i > 0; i--) {
-    const a = result.pop();
-    result.unshift(a);
-  }
-
-  return result;
-}
-
 function getCornerMicropuls(corner) {
   return corner.filter((x) => {
     return [1, 2].indexOf(x) !== -1;
@@ -246,6 +262,13 @@ function isBigTile(tile) {
     return isBig && tile.corners[i].join() == c.join();
   }, true);
 }
+
+const sidesShift = [
+  {di: 1, dj: 0},
+  {di: 0, dj: 1},
+  {di: -1, dj: 0},
+  {di: 0, dj: -1},
+];
 
 /*
  * SIDES & corners
