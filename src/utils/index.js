@@ -31,3 +31,7 @@ export function shuffle(input) {
 
   return output;
 }
+
+export function arg2str(...args) {
+  return args.join('_');
+}

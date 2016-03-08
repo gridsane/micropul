@@ -39,6 +39,17 @@ describe('Game reducer', () => {
     expect(startState).toEqual(nextState);
   });
 
+  it('do not places a stone in a occupied group', () => {
+    const startState = reducer(undefined, actions.start(['id1', 'id2']));
+    let nextState = reducer(startState, actions.placeStone('id1', 0, 0, 1));
+
+    expect(nextState.players[0].stones).toEqual([{i: 0, j: 0, corner: 1}]);
+
+    nextState = reducer(nextState, actions.placeStone('id2', 0, 0, 0));
+    expect(nextState.players[1].stones).toEqual([]);
+    expect(nextState.turnQueue).toEqual(['id2']);
+  });
+
   it('connects a tile', () => {
     const startState = reducer(undefined, actions.start(['id1', 'id2']));
 

@@ -1,6 +1,6 @@
 import * as actions from '../actions/actionsTypes';
-import {possibleTiles, canConnect, getCatalysts} from '../domain/board';
-import {getSecureToken, atIndex, shuffle} from '../utils';
+import {possibleTiles, canConnect, getCatalysts, getGroup} from '../domain/board';
+import {getSecureToken, atIndex, shuffle, arg2str} from '../utils';
 import update from 'react-addons-update';
 
 const initialState = {
@@ -69,6 +69,24 @@ const handlers = {
     }
 
     const playerIndex = getCurrentPlayerIndex(state.turnQueue[0], state.players);
+    const tiles = transformTiles(state.board);
+    const occupiedGroups = state.players.reduce((acc, p) => {
+      p.stones.forEach((stone) => {
+        const group = getGroup(tiles, stone.i, stone.j, stone.corner);
+        acc.push(...group.map((c) => arg2str(c.i, c.j, c.corner)));
+      });
+
+      return acc;
+    }, []);
+
+    const targetGroup = getGroup(tiles, i, j, corner).map((c) => arg2str(c.i, c.j, c.corner));
+    const isGroupOccupied = targetGroup.reduce((acc, c) => {
+      return acc && occupiedGroups.indexOf(c) !== -1;
+    }, true);
+
+    if (isGroupOccupied) {
+      return state;
+    }
 
     return update(state, {
       players: {

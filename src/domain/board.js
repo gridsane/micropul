@@ -1,3 +1,5 @@
+import {arg2str} from '../utils';
+
 export function canConnect(tiles, tile, i, j) {
   return 0 < getConnectionTiles(tiles, i, j).reduce((cost, def) => {
     return cost + getSideConnectionCost(def.tile, tile, def.side);
@@ -76,7 +78,6 @@ export function getPossibleConnections(tiles, tile) {
 }
 
 export function getCorners(tiles) {
-
   return tiles.reduce((acc, tile) => {
     const imap = [tile.i*2, tile.i*2, tile.i*2 + 1, tile.i*2 + 1];
     const jmap = [tile.j*2, tile.j*2 + 1, tile.j*2 + 1, tile.j*2];
@@ -160,10 +161,6 @@ function getCornerIndex(index) {
   }
 
   return index;
-}
-
-function arg2str(...args) {
-  return args.join('_');
 }
 
 function getConnectionTiles(tiles, i, j) {
