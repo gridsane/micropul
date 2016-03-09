@@ -404,16 +404,18 @@ describe('Board', () => {
     // 1 3
 
     expect(board.getGroup(tiles, 0, 0, 0)).toEqual([
+      {i: 0, j: 0, corner: 0},
+      {i: 0, j: 0, corner: 1},
+      {i: 0, j: 0, corner: 3},
+    ]);
+
+    expect(board.getGroup(tiles, 0, 0, 3)).toEqual([
       {i: 0, j: 0, corner: 3},
       {i: 0, j: 0, corner: 0},
       {i: 0, j: 0, corner: 1},
     ]);
 
-    expect(board.getGroup(tiles, 0, 0, 3)).toEqual([
-      {i: 0, j: 0, corner: 0},
-      {i: 0, j: 0, corner: 3},
-      {i: 0, j: 0, corner: 1},
-    ]);
+    expect(board.getGroup(tiles, 0, 0, 2)).toEqual([]);
 
   });
 
@@ -446,19 +448,49 @@ describe('Board', () => {
     // 2 5 | 0 2
 
     expect(board.getGroup(tiles, 0, 0, 0)).toEqual([
-      {i: 0, j: 0, corner: 3},
-      {i: 1, j: 0, corner: 0},
       {i: 0, j: 0, corner: 0},
       {i: 0, j: 0, corner: 1},
       {i: 0, j: 1, corner: 0},
+      {i: 0, j: 0, corner: 3},
+      {i: 1, j: 0, corner: 0},
     ]);
 
     expect(board.getGroup(tiles, 1, 1, 2)).toEqual([
-      {i: 1, j: 1, corner: 1},
       {i: 1, j: 1, corner: 2},
+      {i: 1, j: 1, corner: 1},
       {i: 0, j: 1, corner: 2},
     ]);
 
+    expect(board.getGroup(tiles, 1, 0, 1)).toEqual([
+      {i: 1, j: 0, corner: 1},
+    ]);
+
+  });
+
+  it('returns micropul groups of rotated tiles', () => {
+    const tiles = [
+      {i: 0, j: 0, rotation: 2, corners: [[1], [0], [0], [0]]},
+      {i: 0, j: 1, rotation: 3, corners: [[1], [0], [3], [0]]},
+      {i: 1, j: 0, rotation: 1, corners: [[1], [0], [0], [3]]},
+      {i: 1, j: 1, rotation: 0, corners: [[1], [0], [1], [0]]},
+    ];
+
+    // 0 0 | 0 3
+    // 0 1 | 1 0
+    // - -   - -
+    // 3 1 | 1 0
+    // 0 0 | 0 1
+
+    expect(board.getGroup(tiles, 0, 0, 0)).toEqual([
+      {i: 0, j: 0, corner: 0},
+      {i: 0, j: 1, corner: 0},
+      {i: 1, j: 1, corner: 0},
+      {i: 1, j: 0, corner: 0},
+    ]);
+
+    expect(board.getGroup(tiles, 1, 1, 2)).toEqual([
+      {i: 1, j: 1, corner: 2},
+    ]);
   });
 
   it('determines a closed group', () => {
@@ -492,7 +524,6 @@ describe('Board', () => {
 
     const closedGroup = board.getGroup(tiles, 1, 0, 1);
     expect(board.isGroupClosed(tiles, closedGroup)).toBe(true);
-
   });
 
 });

@@ -111,7 +111,6 @@ export function isGroupClosed(tiles, group) {
         return t.i === el.i + sidesShift[side].di
           && t.j === el.j + sidesShift[side].dj;
       });
-
       return acc && 'undefined' !== typeof(closeTile);
     }, acc);
   }, true);
@@ -128,7 +127,7 @@ export function rotateCorners(corners, rotation) {
 }
 
 function getCornerGroup(corners, corner, group) {
-  sidesShift.forEach((d) => {
+  [{di: 0, dj: 0}, ...sidesShift].forEach((d) => {
     const pos = {i: corner.i + d.di, j: corner.j + d.dj};
     const hash = arg2str(pos.i, pos.j);
     const targetCorner = corners.find((c) => {
@@ -261,9 +260,9 @@ function isBigTile(tile) {
 }
 
 const sidesShift = [
-  {di: 1, dj: 0},
-  {di: 0, dj: 1},
   {di: -1, dj: 0},
+  {di: 0, dj: 1},
+  {di: 1, dj: 0},
   {di: 0, dj: -1},
 ];
 
