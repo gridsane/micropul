@@ -308,7 +308,34 @@ describe('Game reducer', () => {
     expect(nextState.isFinished).toBe(true);
   });
 
-  // @todo: calculates a score when game was finished
-  // @todo: logs actions, including tiles sequences and start state
+  it('calculates a score when game was finished', () => {
+    const startState = reducer(undefined, actions.start(['id1', 'id2']));
+    startState.board = [
+      {id: 8, i: 0, j: 1, rotation: 3}, // 1 0 3 0
+      {id: 14, i: 1, j: 0, rotation: 1}, // 1 0 0 3
+      {id: 28, i: 1, j: 1, rotation: 0}, // 1 0 1 0
+    ];
+
+    startState.players[0].hand = [{id: 2, rotation: 2}], // 1 0 0 0
+    startState.players[0].stones = [{i: 1, j: 0, corner: 0}];
+    startState.players[1].stones = [{i: 1, j: 1, corner: 3}];
+
+    (new Array(48)).fill(1).forEach((_, i) => {
+      if ([2, 8, 14, 28].indexOf(i) === -1) {
+        startState.board.push({id: i, i: 0, j: 2 + i, rotation: 0});
+      }
+    });
+
+    // 0 0 + 0 3 | . .
+    // 0 1 + 1 0 | . .
+    // + +   - -
+    // 3 1 | 1 0
+    // 0 0 | 0 1
+
+    const nextState = reducer(startState, actions.connectTile('id1', 2, 2, 0, 0));
+    expect(nextState.isFinished).toBe(true);
+    expect(nextState.players[0].score).toBe(4);
+    expect(nextState.players[1].score).toBe(0);
+  });
 
 });

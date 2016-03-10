@@ -133,27 +133,33 @@ const handlers = {
       + (catalysts.filter(c => c === 4).length * 2)
     );
 
-    const isFinished = availableTilesCount > 1
-      ? {}
-      : {isFinished: {$set: true}};
+    const isFinished = availableTilesCount <= 1;
+    const nextBoardTiles = [...boardTiles, {...tile, i, j}];
 
     return update(state, {
       board: {$push: [{id: tileId, i, j, rotation}]},
-      players: {
-        [playerIndex]: {
-          hand: {$splice: player.hand.reduce((args, t, index) => {
-            if (t.id === tileId) {
-              args.push([index, 1]);
-            }
+      players: {$set: state.players.map((player, index) => {
+        const currentPlayer = playerIndex === index
+          ? {
+            hand: {$splice: player.hand.reduce((args, t, index) => {
+              if (t.id === tileId) {
+                args.push([index, 1]);
+              }
 
-            return args;
-          }, [])},
-          supply: {$set: player.supply + supplyIncrement},
-        },
-      },
+              return args;
+            }, [])},
+            supply: {$set: player.supply + supplyIncrement},
+          }
+          : null;
+
+        return update(player, {
+          ...currentPlayer,
+          score: {$set: isFinished ? calculateScore(nextBoardTiles, player) : 0},
+        });
+      })},
       updatedAt: setNow(),
+      isFinished: {$set: isFinished},
       ...nextTurn,
-      ...isFinished,
     });
   },
   [actions.GAME_REFILL_HAND]: (state, action) => {
@@ -252,4 +258,11 @@ function transformTile(tile) {
 
 function transformTiles(tiles) {
   return tiles.map(transformTile);
+}
+
+function calculateScore(tiles, player) {
+  return player.stones.reduce((acc, stone) => {
+    const group = getGroup(tiles, stone.i, stone.j, stone.corner);
+    return acc + group.length;
+  }, 0);
 }

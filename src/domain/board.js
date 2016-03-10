@@ -1,7 +1,9 @@
 import {arg2str} from '../utils';
 
 export function canConnect(tiles, tile, i, j) {
-  return 0 < getConnectionTiles(tiles, i, j).reduce((cost, def) => {
+  const isFree = 'undefined' === typeof(tiles.find((t) => t.i === i && t.j === j));
+
+  return isFree && 0 < getConnectionTiles(tiles, i, j).reduce((cost, def) => {
     return cost + getSideConnectionCost(def.tile, tile, def.side);
   }, 0);
 }

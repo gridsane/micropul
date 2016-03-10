@@ -203,6 +203,15 @@ describe('Board', () => {
 
   });
 
+  it('do not connects a tile to the occupied position', () => {
+    const tiles = [
+      {i: 0, j: 0, corners: [[1], [1], [2], [2]], rotation: 0},
+      {i: 0, j: 1, corners: [[1], [1], [2], [2]], rotation: 0},
+    ];
+    const tile = {corners: [[1], [1], [0], [0]], rotation: 0};
+    expect(board.canConnect(tiles, tile, 0, 0)).toBe(false);
+  });
+
   it('returns catalysts', () => {
 
     const tiles = [
@@ -481,11 +490,11 @@ describe('Board', () => {
     // 3 1 | 1 0
     // 0 0 | 0 1
 
-    expect(board.getGroup(tiles, 0, 0, 0)).toEqual([
+    expect(board.getGroup(tiles, 1, 0, 0)).toEqual([
+      {i: 1, j: 0, corner: 0},
       {i: 0, j: 0, corner: 0},
       {i: 0, j: 1, corner: 0},
       {i: 1, j: 1, corner: 0},
-      {i: 1, j: 0, corner: 0},
     ]);
 
     expect(board.getGroup(tiles, 1, 1, 2)).toEqual([
