@@ -255,7 +255,7 @@ function getCornerCatalysts(corner) {
   });
 }
 
-function isBigTile(tile) {
+export function isBigTile(tile) {
   return tile.corners.slice(1).reduce((isBig, c, i) => {
     return isBig && tile.corners[i].join() == c.join();
   }, true);

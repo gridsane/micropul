@@ -1,5 +1,5 @@
 import * as actions from '../actions/actionsTypes';
-import {possibleTiles, canConnect, getCatalysts, getGroup} from '../domain/board';
+import {possibleTiles, canConnect, getCatalysts, getGroup, isBigTile} from '../domain/board';
 import {getSecureToken, atIndex, shuffle, arg2str} from '../utils';
 import update from 'react-addons-update';
 
@@ -135,32 +135,35 @@ const handlers = {
 
     const isFinished = availableTilesCount <= 1;
     const nextBoardTiles = [...boardTiles, {...tile, i, j}];
-
-    return update(state, {
+    const nextState = update(state, {
       board: {$push: [{id: tileId, i, j, rotation}]},
-      players: {$set: state.players.map((player, index) => {
-        const currentPlayer = playerIndex === index
-          ? {
-            hand: {$splice: player.hand.reduce((args, t, index) => {
-              if (t.id === tileId) {
-                args.push([index, 1]);
-              }
+      players: {
+        [playerIndex]: {
+          hand: {$splice: player.hand.reduce((args, t, index) => {
+            if (t.id === tileId) {
+              args.push([index, 1]);
+            }
 
-              return args;
-            }, [])},
-            supply: {$set: player.supply + supplyIncrement},
-          }
-          : null;
-
-        return update(player, {
-          ...currentPlayer,
-          score: {$set: isFinished ? calculateScore(nextBoardTiles, player) : 0},
-        });
-      })},
+            return args;
+          }, [])},
+          supply: {$set: player.supply + supplyIncrement},
+        },
+      },
       updatedAt: setNow(),
       isFinished: {$set: isFinished},
       ...nextTurn,
     });
+
+    if (isFinished) {
+      const scores = calculateScores(nextState, nextBoardTiles);
+      return update(nextState, {
+        players: {$set: nextState.players.map((player) => {
+          return {...player, score: scores[player.id]};
+        })},
+      });
+    }
+
+    return nextState;
   },
   [actions.GAME_REFILL_HAND]: (state, action) => {
     const {playerId, count} = action;
@@ -260,9 +263,42 @@ function transformTiles(tiles) {
   return tiles.map(transformTile);
 }
 
-function calculateScore(tiles, player) {
-  return player.stones.reduce((acc, stone) => {
-    const group = getGroup(tiles, stone.i, stone.j, stone.corner);
-    return acc + group.length;
-  }, 0);
+function calculateScores(state, tiles) {
+  const groups = state.players.reduce((acc, p) => {
+    p.stones.forEach((stone, index) => {
+      const group = getGroup(tiles, stone.i, stone.j, stone.corner);
+      acc.push({hash: hashGroup(group), group, playerId: p.id, index});
+    });
+    return acc;
+  }, []);
+
+  let countedPositions = [];
+  return groups.reduce((scores, g) => {
+    if (groups.filter((sg) => sg.hash === g.hash).length === 1) {
+      scores[g.playerId] += g.group.length + g.group.reduce((bigTilesPoints, c) => {
+        const posHash = arg2str(c.i, c.j);
+          if (countedPositions.indexOf(posHash) === -1) {
+            const tile = tiles.find((t) => t.i === c.i && t.j === c.j);
+            if (isBigTile(tile)) {
+              bigTilesPoints += 1;
+            }
+
+            countedPositions.push(posHash);
+          }
+
+          return bigTilesPoints;
+        }, 0);
+    }
+
+    return scores;
+  }, state.players.reduce((initialScores, p) => {
+    initialScores[p.id] = 0;
+    return initialScores;
+  }, {}));
+}
+
+function hashGroup(group) {
+  return group.map((c) => {
+    return arg2str(c.i, c.j, c.corner);
+  }).sort().join(',');
 }

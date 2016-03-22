@@ -326,11 +326,11 @@ describe('Game reducer', () => {
       }
     });
 
-    // 0 0 + 0 3 | . .
-    // 0 1 + 1 0 | . .
-    // + +   - -
-    // 3 1 | 1 0
-    // 0 0 | 0 1
+    // 0  0  + 0  3 | . .
+    // 0  1  + 1  0 | . .
+    // +  +    -  -
+    // 3 (1) | 1  0
+    // 0  0  | 0 (1)
 
     const nextState = reducer(startState, actions.connectTile('id1', 2, 2, 0, 0));
     expect(nextState.isFinished).toBe(true);
@@ -338,4 +338,74 @@ describe('Game reducer', () => {
     expect(nextState.players[1].score).toBe(0);
   });
 
+  it('does not calculate a score based on groups with more than one stone', () => {
+    const startState = reducer(undefined, actions.start(['id1', 'id2']));
+    startState.board = [
+      {id: 8, i: 0, j: 1, rotation: 3}, // 1 0 3 0
+      {id: 14, i: 1, j: 0, rotation: 1}, // 1 0 0 3
+      {id: 28, i: 1, j: 1, rotation: 0}, // 1 0 1 0
+    ];
+
+    startState.players[0].hand = [{id: 2, rotation: 2}], // 1 0 0 0
+    startState.players[0].stones = [{i: 1, j: 0, corner: 0}];
+    startState.players[1].stones = [{i: 1, j: 1, corner: 0}];
+
+    (new Array(48)).fill(1).forEach((_, i) => {
+      if ([2, 8, 14, 28].indexOf(i) === -1) {
+        startState.board.push({id: i, i: 0, j: 2 + i, rotation: 0});
+      }
+    });
+
+    // 0  0  + 0   3 | . .
+    // 0 (1) + 1   0 | . .
+    // +  +    -   -
+    // 3  1  | (1) 0
+    // 0  0  | 0   1
+
+    const nextState = reducer(startState, actions.connectTile('id1', 2, 2, 0, 0));
+    expect(nextState.isFinished).toBe(true);
+    expect(nextState.players[0].score).toBe(0);
+    expect(nextState.players[1].score).toBe(0);
+  });
+
+  it('counts "big" tiles as 5 score points', () => {
+    const startState = reducer(undefined, actions.start(['id1', 'id2']));
+    startState.board = [
+      {id: 20, i: 0, j: 0, rotation: 2}, // 1 3 0 5
+      {id: 22, i: 1, j: 0, rotation: 1}, // 1 1 0 4
+      {id: 32, i: 2, j: 2, rotation: 0}, // 1 4 3 0
+      {id: 34, i: 2, j: 0, rotation: 1}, // 1 0 2 3
+      {id: 8, i: 0, j: 2, rotation: 3}, // 1 0 3 0
+      {id: 14, i: 2, j: 1, rotation: 1}, // 1 0 0 3
+      {id: 28, i: 1, j: 2, rotation: 0}, // 1 0 1 0
+      {id: 1, i: 0, j: 1, rotation: 0}, // 2 2 1 1
+    ];
+
+    startState.players[0].hand = [{id: 42, rotation: 0}], // 1 1 1 1 [42]
+    (new Array(48)).fill(1).forEach((_, i) => {
+      if ([20, 22, 32, 34, 8, 14, 28, 1, 42].indexOf(i) === -1) {
+        startState.board.push({id: i, i: 0, j: 3 + i, rotation: 0});
+      }
+    });
+
+    //      [20]  [1]   [8]
+    //      5 0 | 0  0  | 0 3 | . .
+    //      3 1 | 1 (1) | 1 0 | . .
+    //      - -   +  +    - -
+    // [22] 4 1 + 1  1  + 1 0 [28]
+    //      0 1 + 1  1  + 0 1
+    //      - -   +  +    - -
+    //      3 1 | 3  1  | 1 4
+    //      2 0 | 0  0  | 0 3
+    //      [34]  [14]   [32]
+
+    startState.players[0].stones = [{i: 0, j: 1, corner: 2}];
+    startState.players[1].stones = [];
+
+    const nextState = reducer(startState, actions.connectTile('id1', 42, 0, 1, 1));
+    expect(nextState.isFinished).toBe(true);
+    expect(nextState.players[0].score).toBe(15);
+    expect(nextState.players[1].score).toBe(0);
+
+  });
 });
