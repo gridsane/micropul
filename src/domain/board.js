@@ -31,7 +31,7 @@ export function getCatalysts(tiles, tile, i, j) {
       if (aMicropuls.length > 0 && bCatalysts.length > 0 && activatedCorners.indexOf(idB) === -1) {
         activatedCorners.push(idB);
         catalysts.push(...bCatalysts);
-      } else if(bMicropuls.length > 0 && aCatalysts.length > 0 && activatedCorners.indexOf(idB) === -1) {
+      } else if(bMicropuls.length > 0 && aCatalysts.length > 0 && activatedCorners.indexOf(idA) === -1) {
         activatedCorners.push(idA);
         catalysts.push(...aCatalysts);
       }
@@ -81,8 +81,8 @@ export function getPossibleConnections(tiles, tile) {
 
 export function getCorners(tiles) {
   return tiles.reduce((acc, tile) => {
-    const imap = [tile.i*2, tile.i*2, tile.i*2 + 1, tile.i*2 + 1];
-    const jmap = [tile.j*2, tile.j*2 + 1, tile.j*2 + 1, tile.j*2];
+    const imap = [tile.i * 2, tile.i * 2, tile.i * 2 + 1, tile.i * 2 + 1];
+    const jmap = [tile.j * 2, tile.j * 2 + 1, tile.j * 2 + 1, tile.j * 2];
     const rotation = tile.rotation || 0;
     rotateCorners(tile.corners, rotation).forEach((corner, cornerIndex) => {
       acc.push({
@@ -259,6 +259,15 @@ export function isBigTile(tile) {
   return tile.corners.slice(1).reduce((isBig, c, i) => {
     return isBig && tile.corners[i].join() == c.join();
   }, true);
+}
+
+export function transformTiles(tiles) {
+  return tiles.map((tile) => {
+    return {
+      ...tile,
+      corners: possibleTiles.find((t) => t.id === tile.id).corners,
+    };
+  });
 }
 
 const sidesShift = [

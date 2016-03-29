@@ -7,7 +7,6 @@ describe('Board', () => {
   });
 
   it('rotates tile', () => {
-
     const corners = [[1], [2], [3], [4]];
 
     expect(board.rotateCorners(corners, 0)).toEqual(corners);
@@ -15,11 +14,9 @@ describe('Board', () => {
     expect(board.rotateCorners(corners, 2)).toEqual([[3], [4], [1], [2]]);
     expect(board.rotateCorners(corners, 3)).toEqual([[2], [3], [4], [1]]);
     expect(board.rotateCorners(corners, 4)).toEqual(corners);
-
   });
 
   it('connects tiles with same colors', () => {
-
     const tiles = [
       {
         i: 0, j: 0,
@@ -54,11 +51,9 @@ describe('Board', () => {
     // 1 1 ! 0 0
     // 0 0 ! 1 1
     expect(board.canConnect(tiles, tile, 0, -1)).toBe(false);
-
   });
 
-  it('do not connects tiles with different colors', () => {
-
+  it('does not connect tiles with different colors', () => {
     const tiles = [{
       i: 0, j: 0,
       corners: [[1], [0], [1], [2]],
@@ -80,11 +75,9 @@ describe('Board', () => {
     // 1 1 + 1 0
     // 0 2 + 2 1
     expect(board.canConnect(tiles, tile, 0, -1)).toBe(true);
-
   });
 
-  it('do not connects tiles without micropul connection', () => {
-
+  it('does not connect tiles without micropul connection', () => {
     const tiles = [{
       i: 0, j: 0,
       corners: [[1], [0], [2], [3]],
@@ -97,7 +90,6 @@ describe('Board', () => {
     };
 
     expect(board.canConnect(tiles, tile, 0, -1)).toBe(false);
-
   });
 
   it('connects tiles with rotation', () => {
@@ -130,11 +122,9 @@ describe('Board', () => {
     // 1 0  >>  1 1 -> rotation 3
     // 1 2  >>  0 2
     expect(board.canConnect(tiles, {corners, rotation: 3}, 1, 0)).toBe(false);
-
   });
 
   it('connects tile with respect of all surrounding tiles', () => {
-
     const tiles = [
       {
         i: 0, j: 0,
@@ -200,7 +190,6 @@ describe('Board', () => {
     // 0 1 | 1 2 | 2 0
     const tile2 = {corners: [[0], [1], [0], [2]], rotation: 1};
     expect(board.canConnect(tiles, tile2, 1, 1)).toBe(false);
-
   });
 
   it('do not connects a tile to the occupied position', () => {
@@ -213,7 +202,6 @@ describe('Board', () => {
   });
 
   it('returns catalysts', () => {
-
     const tiles = [
       {
         i: 0, j: 0,
@@ -249,7 +237,6 @@ describe('Board', () => {
 
     const tile2 = {corners: [[1], [5], [0], [2]], rotation: 0};
     expect(board.getCatalysts(tiles, tile2, 1, 1)).toEqual([3, 4, 5, 5]);
-
   });
 
   it('returns multiple activated catalysts of a same type', () => {
@@ -301,6 +288,15 @@ describe('Board', () => {
     expect(board.getCatalysts(tiles, tile, 1, 0)).toEqual([5]);
   });
 
+  it('returns catalysts activated by "big" tiles', () => {
+    const tiles = [
+      {i: 0, j: 0, corners: [[1], [1], [2], [3]], rotation: 0},
+    ];
+
+    const tile = {corners: [[2,5],[2,5],[2,5],[2,5]], rotation: 0};
+    expect(board.getCatalysts(tiles, tile, 1, 0)).toEqual([3, 5]);
+  });
+
   it('returns free positions', () => {
     const tiles = [
       {
@@ -326,7 +322,6 @@ describe('Board', () => {
   });
 
   it('returns possible connections', () => {
-
     const tiles = [
       {
         i: 0, j: 0,
@@ -355,7 +350,6 @@ describe('Board', () => {
       {i: 1, j: 0},
       {i: 0, j: 1},
     ]);
-
   });
 
   it('returns board corners', () => {
@@ -396,11 +390,9 @@ describe('Board', () => {
       {i: 1, j: 3, micropul: 1, corner: 1, tile: {id: 3, i: 0, j: 1}},
       {i: 1, j: 2, micropul: null, corner: 2, tile: {id: 3, i: 0, j: 1}},
     ]);
-
   });
 
   it('returns micropul groups in a single tile', () => {
-
     const tiles = [
       {
         id: 1,
@@ -425,7 +417,6 @@ describe('Board', () => {
     ]);
 
     expect(board.getGroup(tiles, 0, 0, 2)).toEqual([]);
-
   });
 
   it('returns micropul groups with connections', () => {
@@ -473,7 +464,6 @@ describe('Board', () => {
     expect(board.getGroup(tiles, 1, 0, 1)).toEqual([
       {i: 1, j: 0, corner: 1},
     ]);
-
   });
 
   it('returns micropul groups of rotated tiles', () => {

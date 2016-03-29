@@ -1,5 +1,12 @@
 import * as actions from '../actions/actionsTypes';
-import {possibleTiles, canConnect, getCatalysts, getGroup, isBigTile} from '../domain/board';
+import {
+  possibleTiles,
+  canConnect,
+  getCatalysts,
+  getGroup,
+  isBigTile,
+  transformTiles,
+} from '../domain/board';
 import {getSecureToken, atIndex, shuffle, arg2str} from '../utils';
 import update from 'react-addons-update';
 
@@ -69,6 +76,11 @@ const handlers = {
     }
 
     const playerIndex = getCurrentPlayerIndex(state.turnQueue[0], state.players);
+
+    if (state.players[playerIndex].stones.length >= 3) {
+      return state;
+    }
+
     const tiles = transformTiles(state.board);
     const occupiedGroups = state.players.reduce((acc, p) => {
       p.stones.forEach((stone) => {
@@ -113,7 +125,7 @@ const handlers = {
     }
 
     const boardTiles = transformTiles(state.board);
-    const tile = transformTile({id: tileId, rotation});
+    const tile = transformTiles([{id: tileId, rotation}])[0];
 
     if (!canConnect(boardTiles, tile, i, j)) {
       return state;
@@ -250,17 +262,6 @@ function getRandomTiles(state, count) {
 function getAvailableTilesCount(state) {
   const supply = state.players.reduce((acc, p) => acc + p.supply, 0);
   return getClosedTiles(state).length - supply;
-}
-
-function transformTile(tile) {
-  return {
-    ...tile,
-    corners: possibleTiles.find((t) => t.id === tile.id).corners,
-  };
-}
-
-function transformTiles(tiles) {
-  return tiles.map(transformTile);
 }
 
 function calculateScores(state, tiles) {

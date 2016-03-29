@@ -50,6 +50,24 @@ describe('Game reducer', () => {
     expect(nextState.turnQueue).toEqual(['id2']);
   });
 
+  it('does not allow to place more than 3 stones', () => {
+    const startState = reducer(undefined, actions.start(['id1', 'id2']));
+    startState.board = [
+      ...startState.board,
+      {id: 28, i: 0, j: 1}, // 1 0 1 0
+      {id: 29, i: 1, j: 0}, // 2 0 2 0
+    ];
+
+    startState.players[0].stones = [
+      {i: 0, j: 0, corner: 0},
+      {i: 0, j: 0, corner: 2},
+      {i: 1, j: 0, corner: 2},
+    ];
+
+    const nextState = reducer(startState, actions.placeStone('id1', 0, 1, 2));
+    expect(nextState).toEqual(startState);
+  });
+
   it('connects a tile', () => {
     const startState = reducer(undefined, actions.start(['id1', 'id2']));
 
@@ -406,6 +424,5 @@ describe('Game reducer', () => {
     expect(nextState.isFinished).toBe(true);
     expect(nextState.players[0].score).toBe(15);
     expect(nextState.players[1].score).toBe(0);
-
   });
 });
