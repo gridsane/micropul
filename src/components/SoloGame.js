@@ -1,82 +1,143 @@
 import React, {Component} from 'react';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import ElementPan from 'react-element-pan';
+import {connect} from 'react-redux';
+import {curried} from '../utils';
+import {
+  start,
+  connectTile,
+  refillHand,
+  placeStone,
+} from '../actions/game';
+import {
+  transformTiles,
+  getPossibleConnections,
+} from '../domain/board';
 import Board from './Board';
 import DragTile from './DragTile';
-import {getPossibleConnections, getCatalysts, getGroup} from '../domain/board';
-import {boardAddTile, applyCatalysts, handAddTile} from '../actions/game';
 
 @DragDropContext(HTML5Backend)
+@connect(mapToProps)
 export default class SoloGame extends Component {
 
   state = {
-    possibleConnections: [],
-    group: [],
+    placeholders: [],
+    boardPan: {x: 0, y: 0},
+    handRotations: {},
+    tileSize: 64,
   };
 
   render() {
-    const {board, hand, supply} = this.props;
+    const {tiles, hand, supply, stones} = this.props;
+    const {tileSize, boardPan, placeholders} = this.state;
+    const styles = this.getStyles();
 
     return <div>
-      <Board
-        tileSize={48}
-        tiles={board}
-        group={this.state.group}
-        placeholders={this.state.possibleConnections}
-        onTileConnect={::this._connectTile}
-        onCornerClick={::this._cornerClick}/>
-
-      <div style={{overflow: 'auto'}}>
-
-        {hand.map((tile, index) => {
-          return <DragTile
-            key={index}
-            i={0} j={0}
-            rotation={0}
-            onDragStart={::this._setCurrentTile}
-            {...tile} />;
-        })}
-
+      <div style={styles.boardContainer}>
+        <ElementPan
+          width={640}
+          height={240}
+          startX={boardPan.x}
+          startY={boardPan.y}
+          onPanStop={::this._boardPanStop}>
+          <Board
+            tileSize={tileSize}
+            tiles={tiles}
+            placeholders={placeholders}
+            onTileConnect={::this._connectTile}
+            onCornerClick={::this._placeStone} />
+        </ElementPan>
       </div>
-      <ul>
-        <li>
-          <strong>Supply:</strong> {supply}
-          <button onClick={::this._supplyToHand}>to hand</button>
-        </li>
-      </ul>
-      <code>
-        {JSON.stringify(this.props.board, null, 4)}
-      </code>
+
+      <div style={styles.hand}>
+        {hand.map((tile, index) => this._renderHandTile(styles, tile, index))}
+      </div>
+
+      <button onClick={::this._refillHand}>Refill hand ({supply})</button>
+      <br/><strong>Stones left:</strong> {3 - stones.length}
+
+      <pre><code>{JSON.stringify(this.state, null, 2)}</code></pre>
+      <pre><code>{JSON.stringify(this.props, null, 2)}</code></pre>
     </div>;
   }
 
-  _supplyToHand() {
-    this.props.dispatch(handAddTile(1));
+  componentWillMount() {
+    this.props.dispatch(start(['solo_player']));
   }
 
-  _cornerClick(tile, cornerIndex) {
-    const group = getGroup(this.props.board, tile.i, tile.j, cornerIndex);
-    console.log(group);
-    this.setState({group});
+  _renderHandTile(styles, tile, index) {
+    const rotation = this.state.handRotations[tile.id] || 0;
+    return <div style={styles.handTile} key={index}>
+      <DragTile {...tile}
+        onDragStart={::this._updatePlaceholders}
+        x={0}
+        y={0}
+        rotation={rotation} />
+      <button onClick={curried(::this._rotateHandTile, tile.id, rotation + 1)}>
+        rotate
+      </button>
+    </div>;
   }
 
   _connectTile(tile, i, j) {
-    const {dispatch, board} = this.props;
-    const {id, corners, rotation} = tile;
-
-    dispatch(boardAddTile({
-      i, j,
-      id,
-      corners,
-      rotation,
-    }));
-
-    dispatch(applyCatalysts(getCatalysts(board, tile, i, j)));
+    this.props.dispatch(connectTile('solo_player', tile.id, tile.rotation, i, j));
   }
 
-  _setCurrentTile(tile) {
-    this.setState({
-      possibleConnections: getPossibleConnections(this.props.board, tile),
-    });
+  _placeStone(tile, corner) {
+    this.props.dispatch(placeStone('solo_player', tile.i, tile.j, corner));
   }
+
+  _updatePlaceholders(tile) {
+    this.setState({placeholders: getPossibleConnections(this.props.tiles, tile)});
+  }
+
+  _boardPanStop(position) {
+    this.setState({boardPan: position});
+  }
+
+  _refillHand() {
+    this.props.dispatch(refillHand('solo_player', 1));
+  }
+
+  _rotateHandTile(tileId, rotation) {
+    this.setState({handRotations: {...this.state.handRotations, [tileId]: rotation}});
+  }
+
+  getStyles() {
+    const {tileSize} = this.state;
+
+    return {
+      boardContainer: {
+        border: '1px solid red',
+      },
+      hand: {
+        height: tileSize,
+        marginBottom: 30,
+      },
+      handTile: {
+        width: tileSize,
+        height: tileSize,
+        float: 'left',
+      },
+    };
+  }
+}
+
+export function mapToProps(state) {
+  const player = state.game.players[0];
+  const playerProps = player ? {
+    hand: transformTiles(state.game.players[0].hand),
+    supply: player.supply,
+    stones: player.stones,
+  } : {
+    hand: [],
+    supply: 0,
+    stones: [],
+  };
+
+  return {
+    tiles: transformTiles(state.game.board),
+    ...playerProps,
+  };
 }

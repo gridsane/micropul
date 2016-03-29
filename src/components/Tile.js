@@ -6,6 +6,8 @@ import {curried} from '../utils';
 export default class Tile extends Component {
 
   static propTypes = {
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
     i: PropTypes.number.isRequired,
     j: PropTypes.number.isRequired,
     corners: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
@@ -89,15 +91,15 @@ export default class Tile extends Component {
   }
 
   getStyles() {
-    const {i, j, rotation, size} = this.props;
+    const {x, y, rotation, size} = this.props;
 
     return {
       container: {
-        left: j * size,
-        top: i * size,
+        left: x,
+        top: y,
         width: size,
         height: size,
-        transform: rotate(rotation * 90, size / 2, size / 2),
+        transform: `rotate(${rotation * 90}deg)`,
         position: 'absolute',
       },
 

@@ -25,6 +25,7 @@
     "react-dnd": "^2.0.2",
     "react-dnd-html5-backend": "^2.0.2",
     "react-dom": "^0.14.0",
+    "react-element-pan": "^1.0.7",
     "react-redux": "^4.0.0",
     "react-router": "^2.0.0",
     "redux": "^3.0.4",

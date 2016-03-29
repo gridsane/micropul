@@ -25,10 +25,9 @@ export default DragSource('tile', {
 
 const styles = {
   container: {
-    width: 64,
-    height: 64,
-    float: 'left',
     position: 'relative',
     cursor: 'move',
+    height: 64,
+    width: 64,
   },
 };

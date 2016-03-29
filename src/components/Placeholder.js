@@ -22,12 +22,14 @@ function dropCollect(connect, monitor) {
 export default class Placeholder extends Component {
 
   static propTypes = {
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+    i: PropTypes.number.isRequired,
+    j: PropTypes.number.isRequired,
     canDrop: PropTypes.bool.isRequired,
     isOver: PropTypes.bool.isRequired,
     connectDropTarget: PropTypes.func.isRequired,
     onDrop: PropTypes.func.isRequired,
-    i: PropTypes.number.isRequired,
-    j: PropTypes.number.isRequired,
     size: PropTypes.number,
   };
 
@@ -43,12 +45,12 @@ export default class Placeholder extends Component {
   }
 
   getStyles() {
-    const {i, j, size, canDrop, isOver} = this.props;
+    const {x, y, size, canDrop, isOver} = this.props;
 
     return {
       container: {
-        left: j * size,
-        top: i * size,
+        left: x,
+        top: y,
         width: size,
         height: size,
         position: 'absolute',
