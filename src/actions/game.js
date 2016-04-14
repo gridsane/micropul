@@ -1,7 +1,7 @@
 import * as types from './actionsTypes';
 
-export function start(playersIds) {
-  return {type: types.GAME_START, playersIds};
+export function start(gameId, playersIds) {
+  return {type: types.GAME_START, gameId, playersIds};
 }
 
 export function connectTile(playerId, tileId, rotation, i, j) {

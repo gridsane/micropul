@@ -2,11 +2,6 @@ export function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-export function getSecureToken() {
-  // @todo token generator
-  return getRandomInt(0, 9999);
-}
-
 export function curried(fn, ...args) {
   return (...nArgs) => fn.apply(this, [...args, ...nArgs]);
 }

@@ -7,7 +7,7 @@ import {
   isBigTile,
   transformTiles,
 } from '../domain/board';
-import {getSecureToken, atIndex, shuffle, arg2str} from '../utils';
+import {atIndex, shuffle, arg2str} from '../utils';
 import update from 'react-addons-update';
 
 const initialState = {
@@ -48,7 +48,7 @@ const handlers = {
     }, action.playersIds.length * 6);
 
     return {
-      gameId: getSecureToken(),
+      gameId: action.gameId,
       playerId: state.playerId,
       players: action.playersIds.map((id, index) => {
         const startHandIndex = Math.max(0, (index * 6) - 1);

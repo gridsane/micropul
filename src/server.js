@@ -1,13 +1,18 @@
 import 'babel-polyfill';
+import http from 'http';
 import express from 'express';
+import socketio from 'socket.io';
 import bodyParser from 'body-parser';
 import path from 'path';
+import initSocket from './server/socket';
 
 const config = {
   port: parseInt(process.env.PORT || 3000),
 };
 
 const app = express();
+const server = http.Server(app);
+initSocket(socketio(server));
 
 if (process.env.NODE_ENV !== 'production') {
   const webpack = require('webpack');
@@ -31,12 +36,13 @@ app
   .use('/assets', express.static(__dirname + '/../assets'))
   .get('/', (req, res) => {
     res.sendfile(path.resolve(__dirname + '/../index.html'));
-  })
-  .listen(config.port, (err) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-
-    console.log("Server listening on port " + config.port);
   });
+
+server.listen(config.port, (err) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+
+  console.log("Server listening on port " + config.port);
+});
