@@ -8,7 +8,7 @@ export default class Chat extends Component {
   };
 
   state = {
-    currentMessage: null,
+    currentMessage: '',
   };
 
   render() {

@@ -99,10 +99,11 @@ export function mapToProps(state) {
     isStarted,
     isFinished: state.game.isFinished,
     tiles: transformTiles(state.game.board),
-    player: player ? {
-      ...player,
-      hand: transformTiles(player.hand),
-    } : null,
-    opponents: state.game.players.filter((p) => p.id !== player.id),
+    player: player
+      ? {...player, hand: transformTiles(player.hand)}
+      : null,
+    opponents: player
+      ? state.game.players.filter((p) => p.id !== player.id)
+      : [],
   };
 }
