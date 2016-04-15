@@ -1,0 +1,39 @@
+$tileSize: 64px;
+
+@mixin tileSize {
+  width: $tileSize;
+  height: $tileSize;
+}
+
+.tile {
+  @include tileSize;
+  box-shadow: 2px 2px 3px rgba(0,0,0,.2);
+
+  &Background {
+    fill: #fff;
+    stroke-width: 1;
+    stroke: #666;
+  }
+
+  &MicropulBlack {
+    stroke-width: 2;
+    stroke: #000;
+    fill: #000;
+  }
+
+  &MicropulWhite {
+    stroke-width: 2;
+    stroke: #000;
+    fill: none;
+  }
+}
+
+.handTile {
+  @include tileSize;
+  position: relative;
+  cursor: move;
+
+  &Dragging {
+    opacity: .2;
+  }
+}

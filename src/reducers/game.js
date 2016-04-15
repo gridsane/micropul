@@ -69,18 +69,23 @@ const handlers = {
   },
 
   [actions.GAME_PLACE_STONE]: (state, action) => {
-    const {i, j, corner, playerId} = action;
+    const {id, corner, playerId} = action;
 
     if (playerId !== state.turnQueue[0]) {
       return state;
     }
 
     const playerIndex = getCurrentPlayerIndex(state.turnQueue[0], state.players);
-
     if (state.players[playerIndex].stones.length >= 3) {
       return state;
     }
 
+    const targetTile = state.board.find((t) => t.id === id);
+    if (!targetTile) {
+      return state;
+    }
+
+    const {i, j} = targetTile;
     const tiles = transformTiles(state.board);
     const occupiedGroups = state.players.reduce((acc, p) => {
       p.stones.forEach((stone) => {

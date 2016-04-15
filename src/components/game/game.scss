@@ -1,0 +1,49 @@
+.game {
+
+  &BoardPan {
+    border: 1px solid red;
+  }
+
+  &Hand {
+    margin-bottom: 30px;
+
+    &Tile {
+      display: inline-block;
+
+      &Dragging {
+        opacity: .5;
+      }
+
+      &Rotate {
+        display: block;
+      }
+    }
+
+  }
+
+}
+
+.multiplayer {
+
+  &Root {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    height: 100%;
+  }
+
+  &Game {
+    height: 100%;
+    flex-grow: 2;
+  }
+
+}
+
+.solo {
+
+  &Root {
+    width: 100%;
+    height: 100%;
+  }
+
+}

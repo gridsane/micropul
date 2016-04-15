@@ -25,7 +25,7 @@ describe('Game reducer', () => {
 
   it('places a stone', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
-    const nextState = reducer(startState, actions.placeStone('id1', 0, 0, 1));
+    const nextState = reducer(startState, actions.placeStone('id1', 0, 1));
 
     const player = nextState.players.find((p) => p.id === 'id1');
     expect(player.stones).toEqual([{i: 0, j: 0, corner: 1}]);
@@ -35,17 +35,17 @@ describe('Game reducer', () => {
 
   it('do not places a stone out of turn', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
-    const nextState = reducer(startState, actions.placeStone('id2', 0, 0, 1));
+    const nextState = reducer(startState, actions.placeStone('id2', 0, 1));
     expect(startState).toEqual(nextState);
   });
 
   it('do not places a stone in a occupied group', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
-    let nextState = reducer(startState, actions.placeStone('id1', 0, 0, 1));
+    let nextState = reducer(startState, actions.placeStone('id1', 0, 1));
 
     expect(nextState.players[0].stones).toEqual([{i: 0, j: 0, corner: 1}]);
 
-    nextState = reducer(nextState, actions.placeStone('id2', 0, 0, 0));
+    nextState = reducer(nextState, actions.placeStone('id2', 0, 0));
     expect(nextState.players[1].stones).toEqual([]);
     expect(nextState.turnQueue).toEqual(['id2']);
   });
@@ -64,7 +64,7 @@ describe('Game reducer', () => {
       {i: 1, j: 0, corner: 2},
     ];
 
-    const nextState = reducer(startState, actions.placeStone('id1', 0, 1, 2));
+    const nextState = reducer(startState, actions.placeStone('id1', 28, 2));
     expect(nextState).toEqual(startState);
   });
 

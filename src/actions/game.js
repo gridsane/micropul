@@ -12,8 +12,8 @@ export function refillHand(playerId, count = 1) {
   return {type: types.GAME_REFILL_HAND, playerId, count};
 }
 
-export function placeStone(playerId, i, j, corner) {
-  return {type: types.GAME_PLACE_STONE, playerId, i, j, corner};
+export function placeStone(playerId, id, corner) {
+  return {type: types.GAME_PLACE_STONE, playerId, id, corner};
 }
 
 export function skipTurn(playerId) {

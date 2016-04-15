@@ -1,0 +1,23 @@
+@import '../tile/tile.scss';
+
+.board {
+  position: relative;
+  margin: 0 auto;
+  outline: 1px solid yellow;
+}
+
+.tilePlaceholder {
+  @include tileSize;
+  position: absolute;
+  transition: background-color .2s ease-out;
+  opacity: .3;
+  background-color: transparent;
+
+  &IsOver {
+    opacity: .5
+  }
+
+  &CanDrop {
+    background-color: #0f0;
+  }
+}

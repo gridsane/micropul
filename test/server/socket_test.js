@@ -1,7 +1,7 @@
 import initSocket from '../../src/server/socket';
 import {skipTurn} from '../../src/actions/game';
 
-describe('Multiplayer socket @now', () => {
+describe('Multiplayer socket', () => {
 
   let server;
   const ioMock = createIoMock();
