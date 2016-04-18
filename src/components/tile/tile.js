@@ -14,14 +14,15 @@ export default class Tile extends Component {
 
   render() {
     const {corners, rotation} = this.props;
+    // <rect x={0} y={0} width={64} height={64} className={styles.tileBackground} />
 
-    return <svg
-      viewBox="0 0 64 64"
-      style={{transform: `rotate(${rotation * 90}deg)`}}
-      className={styles.tile}>
-        <rect x={0} y={0} width={64} height={64} className={styles.tileBackground} />
-        {this.renderCorners(corners)}
-    </svg>;
+    return <div className={styles.tile}>
+      <svg
+        viewBox="0 0 64 64"
+        style={{transform: `rotate(${rotation * 90}deg)`}}>
+          {this.renderCorners(corners)}
+      </svg>
+    </div>;
   }
 
   renderCorners(corners) {

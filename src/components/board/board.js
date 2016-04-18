@@ -48,8 +48,9 @@ export default class Board extends Component {
 
   _getPosition(bounds, i, j) {
     return {
-      x: (j + Math.abs(bounds.minJ) + 1) * this.props.tileSize,
-      y: (i + Math.abs(bounds.minI) + 1) * this.props.tileSize,
+      x: (j + Math.abs(bounds.minJ) + 1) * (this.props.tileSize - 1),
+      y: (i + Math.abs(bounds.minI) + 1) * (this.props.tileSize - 1),
+      z: i + j,
     };
   }
 

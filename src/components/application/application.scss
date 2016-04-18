@@ -1,3 +1,5 @@
+@import '_color.scss';
+
 :global {
 
   @import url('https://fonts.googleapis.com/icon?family=Roboto');
@@ -6,7 +8,8 @@
     padding: 0;
     margin: 0;
     font-family: 'Roboto';
-    background-color: rgba(0,0,0,.05);
+    color: $primaryColor;
+    background-color: $backgroundColor;
     -webkit-font-smoothing: antialiased;
   }
 

@@ -1,3 +1,5 @@
+@import '../application/_color.scss';
+
 $tileSize: 64px;
 
 @mixin tileSize {
@@ -7,13 +9,10 @@ $tileSize: 64px;
 
 .tile {
   @include tileSize;
-  box-shadow: 2px 2px 3px rgba(0,0,0,.2);
-
-  &Background {
-    fill: #fff;
-    stroke-width: 1;
-    stroke: #666;
-  }
+  box-shadow: 2px 2px 3px rgba($primaryColor, .2);
+  background-color: $backgroundColor;
+  border: 1px solid rgba($primaryColor, .3);
+  box-sizing: border-box;
 
   &MicropulBlack {
     stroke-width: 2;

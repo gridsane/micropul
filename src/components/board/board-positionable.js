@@ -5,5 +5,6 @@ export default (props) => (
     position: 'absolute',
     left: props.x,
     top: props.y,
+    zIndex: props.z,
   }}>{props.children}</div>
 );

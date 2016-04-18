@@ -1,4 +1,5 @@
 @import '../tile/tile.scss';
+@import '../application/_color.scss';
 
 .board {
   position: relative;
@@ -18,6 +19,6 @@
   }
 
   &CanDrop {
-    background-color: #0f0;
+    background-color: $accentColor;
   }
 }
