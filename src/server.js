@@ -35,7 +35,7 @@ app
   .use(bodyParser.json())
   .use('/assets', express.static(__dirname + '/../assets'))
   .get('/', (req, res) => {
-    res.sendfile(path.resolve(__dirname + '/../index.html'));
+    res.sendFile(path.resolve(__dirname + '/../index.html'));
   });
 
 server.listen(config.port, (err) => {

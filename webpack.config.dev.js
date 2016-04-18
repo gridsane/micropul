@@ -7,6 +7,7 @@ module.exports = {
   devtool: 'eval',
   entry: [
     'babel-polyfill',
+    'react-addons-perf',
     './src/client',
   ],
   output: {
@@ -19,6 +20,10 @@ module.exports = {
   ],
   module: {
     loaders: [
+      {
+        test: require.resolve('react-addons-perf'),
+        loader: 'expose?ReactPerf',
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,
