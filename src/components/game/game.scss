@@ -1,24 +1,52 @@
+@import '../application/_color.scss';
+@import '../tile/tile.scss';
+
 .game {
 
-  &BoardPan {
-    border: 1px solid red;
+  &Root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-around;
   }
 
   &Hand {
-    margin-bottom: 30px;
-
-    &Tile {
+    &Tile, &Supply {
       display: inline-block;
+      float: left;
+      margin: 2px;
+      cursor: pointer;
 
-      &Dragging {
-        opacity: .5;
-      }
-
-      &Rotate {
-        display: block;
+      &:hover {
+        box-shadow: 0 0 2px 2px $accentColor;
       }
     }
 
+    &Tile {
+      &Dragging {
+        opacity: .5;
+      }
+    }
+
+    &Supply {
+      @include tileSize;
+      text-align: center;
+
+      &Label {
+        font-size: 14px;
+        line-height: 20px;
+      }
+
+      &Total {
+        font-size: 24px;
+        line-height: 42px;
+      }
+    }
+  }
+
+  &Stones {
+    border: 1px solid blue;
   }
 
 }
@@ -33,7 +61,6 @@
   }
 
   &Game {
-    height: 100%;
     flex-grow: 2;
   }
 
@@ -44,6 +71,9 @@
   &Root {
     width: 100%;
     height: 100%;
+  }
+
+  &Game {
   }
 
 }

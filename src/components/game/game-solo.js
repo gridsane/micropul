@@ -24,7 +24,7 @@ export default class GameMultiplayer extends Component {
         onConnectTile={::this._connectTile}
         onPlaceStone={::this._placeStone}
         onRefillHand={::this._refillHand}
-        className={styles.multiplayerGame} />
+        className={styles.soloGame} />
     </div>;
   }
 

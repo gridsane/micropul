@@ -13,17 +13,23 @@ export default class Board extends Component {
     onConnectTile: PropTypes.func.isRequired,
     onCornerClick: PropTypes.func.isRequired,
     tileSize: PropTypes.number,
+    containerHeight: PropTypes.number,
   };
 
   static defaultProps = {
     tileSize: 64,
+    containerHeight: 0,
   };
 
   render() {
-    const {tiles, placeholders, onConnectTile} = this.props;
+    const {tiles, placeholders, onConnectTile, containerHeight} = this.props;
     const bounds = getBounds(tiles);
+    const boardSize = this._getBoardSize(bounds);
+    const veticalMargin = {
+      marginTop: Math.max(0, (containerHeight / 2) - (boardSize.height / 2)),
+    };
 
-    return <div className={styles.board} style={this._getBoardSize(bounds)}>
+    return <div className={styles.board} style={{...veticalMargin, ...boardSize}}>
       {tiles.map((tile, i) => {
         return <Positionable key={`tile-${i}`} {...this._getPosition(bounds, tile.i, tile.j)}>
           <Tile
@@ -47,10 +53,13 @@ export default class Board extends Component {
   }
 
   _getPosition(bounds, i, j) {
+    const positiveI = Math.abs(bounds.minI) + i + 1;
+    const positiveJ = Math.abs(bounds.minJ) + j + 1;
+
     return {
-      x: (j + Math.abs(bounds.minJ) + 1) * (this.props.tileSize - 1),
-      y: (i + Math.abs(bounds.minI) + 1) * (this.props.tileSize - 1),
-      z: i + j,
+      x: positiveJ * (this.props.tileSize - 1),
+      y: positiveI * (this.props.tileSize - 1),
+      z: positiveI + positiveJ,
     };
   }
 
