@@ -4,10 +4,8 @@
 .board {
   position: relative;
   margin: 0 auto;
-  outline: 1px solid yellow;
 
   &Pannable {
-    border: 1px solid red;
     overflow: hidden;
     flex-grow: 1;
   }

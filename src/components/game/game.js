@@ -38,15 +38,17 @@ export class Game extends Component {
         onConnectTile={::this.props.onConnectTile}
         onCornerClick={::this.props.onPlaceStone} />
 
-      <Hand
-        tiles={hand}
-        supply={supply}
-        onUpdatePlaceholders={::this._updatePlaceholders}
-        onClearPlaceholders={::this._clearPlaceholders}
-        onRefill={::this.props.onRefillHand}/>
-
-      <div className={styles.gameStones}>
-        <strong>Stones left:</strong> {3 - stones.length}
+      <div className={styles.gamePlayer}>
+        <div className={styles.gameStones}>
+          <div className={styles.gameStonesLabel}>Stones</div>
+          <div className={styles.gameStonesTotal}>{3 - stones.length}</div>
+        </div>
+        <Hand
+          tiles={hand}
+          supply={supply}
+          onUpdatePlaceholders={::this._updatePlaceholders}
+          onClearPlaceholders={::this._clearPlaceholders}
+          onRefill={::this.props.onRefillHand}/>
       </div>
     </div>;
   }

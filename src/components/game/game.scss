@@ -8,10 +8,17 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    justify-content: space-around;
+  }
+
+  &Player {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
   }
 
   &Hand {
+    flex-grow: 1;
+
     &Tile, &Supply {
       display: inline-block;
       float: left;
@@ -46,7 +53,19 @@
   }
 
   &Stones {
-    border: 1px solid blue;
+    @include tileSize;
+    margin: 2px;
+    text-align: center;
+
+    &Label {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    &Total {
+      font-size: 24px;
+      line-height: 42px;
+    }
   }
 
 }
