@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import ClassNames from 'classnames';
 import ElementPan from 'react-element-pan';
 import styles from './board.scss';
@@ -23,7 +23,7 @@ export default class PannableBoard extends Component {
             height={height}
             startX={startX}
             startY={startY}
-            onPanStop={::this._stopPan}>
+            onPanStop={this._stopPan}>
             <Board {...this.props} containerHeight={height} />
           </ElementPan>
         : null
@@ -32,29 +32,25 @@ export default class PannableBoard extends Component {
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      this._updateSize();
-    }, 0);
-
-    this._bindedUpdateSize = ::this._updateSize;
+    setTimeout(this._updateSize, 0);
 
     if (typeof window !== 'undefined') {
-      window.addEventListener('resize', this._bindedUpdateSize);
+      window.addEventListener('resize', this._updateSize);
     }
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this._bindedUpdateSize);
+    window.removeEventListener('resize', this._updateSize);
   }
 
-  _updateSize() {
+  _updateSize = () => {
     this.setState({
       width: this.refs.container.clientWidth,
       height: this.refs.container.clientHeight,
     });
   }
 
-  _stopPan({x, y}) {
-    this.setState({startX: x, startY: y})
+  _stopPan = ({x, y}) => {
+    this.setState({startX: x, startY: y});
   }
 }

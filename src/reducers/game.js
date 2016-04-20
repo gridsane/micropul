@@ -1,4 +1,4 @@
-import * as actions from '../actions/actionsTypes';
+import * as actions from '../actions/action-types';
 import {
   possibleTiles,
   canConnect,

@@ -14,15 +14,15 @@ export default class Board extends Component {
     onCornerClick: PropTypes.func.isRequired,
     tileSize: PropTypes.number,
     containerHeight: PropTypes.number,
-  };
+  }
 
   static defaultProps = {
     tileSize: 64,
     containerHeight: 0,
-  };
+  }
 
   render() {
-    const {tiles, placeholders, onConnectTile, containerHeight} = this.props;
+    const {tiles, placeholders, containerHeight} = this.props;
     const bounds = getBounds(tiles);
     const boardSize = this._getBoardSize(bounds);
     const veticalMargin = {
@@ -36,13 +36,13 @@ export default class Board extends Component {
             id={tile.id}
             corners={tile.corners}
             rotation={tile.rotation}
-            onCornerClick={::this.props.onCornerClick} />
+            onCornerClick={this.props.onCornerClick} />
         </Positionable>;
       })}
 
       {placeholders.map((placeholder, i) => {
         return <Positionable key={`placholder-${i}`} {...this._getPosition(bounds, placeholder.i, placeholder.j)}>
-          <Placeholder onDrop={onConnectTile} {...placeholder} />
+          <Placeholder onDrop={this.props.onConnectTile} {...placeholder} />
         </Positionable>;
       })}
     </div>;

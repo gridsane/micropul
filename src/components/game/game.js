@@ -19,12 +19,12 @@ export class Game extends Component {
     onConnectTile: PropTypes.func.isRequired,
     onPlaceStone: PropTypes.func.isRequired,
     onRefillHand: PropTypes.func.isRequired,
-  };
+  }
 
   state = {
     placeholders: [],
     handRotations: {},
-  };
+  }
 
   render() {
     const {tiles, hand, supply, stones, className} = this.props;
@@ -46,23 +46,19 @@ export class Game extends Component {
         <Hand
           tiles={hand}
           supply={supply}
-          onUpdatePlaceholders={::this._updatePlaceholders}
-          onClearPlaceholders={::this._clearPlaceholders}
+          onUpdatePlaceholders={this._updatePlaceholders}
+          onClearPlaceholders={this._clearPlaceholders}
           onRefill={::this.props.onRefillHand}/>
       </div>
     </div>;
   }
 
-  _updatePlaceholders(tile) {
-    this.setState({placeholders: getPossibleConnections(this.props.tiles, tile)});
-  }
-
-  _clearPlaceholders() {
+  _clearPlaceholders = () => {
     this.setState({placeholders: []});
   }
 
-  _rotateHandTile(tileId, rotation) {
-    this.setState({handRotations: {...this.state.handRotations, [tileId]: rotation}});
+  _updatePlaceholders = (tile) => {
+    this.setState({placeholders: getPossibleConnections(this.props.tiles, tile)});
   }
 }
 

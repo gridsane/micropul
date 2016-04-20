@@ -42,7 +42,7 @@ class SocketServer {
     clients.forEach((c) => {
       c.gameId = gameId;
       c.socket.join(gameId);
-      c.socket.emit('game_start', {
+      c.socket.emit('game_update_state', {
         ...hideOpponentsHands(gameState, c.playerId),
         playerId: c.playerId,
       });
@@ -65,7 +65,7 @@ class SocketServer {
       this.games[gameIndex] = nextState;
 
       this.clients.filter((c) => c.gameId === gameId).forEach((c) => {
-        c.socket.emit('game_state', {
+        c.socket.emit('game_update_state', {
           ...hideOpponentsHands(nextState, c.playerId),
           playerId: c.playerId,
         });
@@ -101,4 +101,4 @@ function generateId() {
 
 export default (io) => {
   return new SocketServer(io);
-}
+};

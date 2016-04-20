@@ -1,4 +1,4 @@
-import * as types from './actionsTypes';
+import * as types from './action-types';
 
 export function start(gameId, playersIds) {
   return {type: types.GAME_START, gameId, playersIds};

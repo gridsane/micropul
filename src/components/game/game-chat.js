@@ -5,11 +5,11 @@ export default class Chat extends Component {
     playerId: PropTypes.string.isRequired,
     messages: PropTypes.array.isRequired,
     onSend: PropTypes.func.isRequired,
-  };
+  }
 
   state = {
     currentMessage: '',
-  };
+  }
 
   render() {
     const {messages, playerId} = this.props;
@@ -24,22 +24,22 @@ export default class Chat extends Component {
       })}
       <div style={styles.sendContainer}>
         <input
-          onChange={::this._changeMessage}
+          onChange={this._changeMessage}
           value={currentMessage}
           type="text"
           style={styles.sendInput} />
         <button
-          onClick={::this._sendMessage}
+          onClick={this._sendMessage}
           style={styles.sendButton}>Send</button>
       </div>
     </aside>;
   }
 
-  _changeMessage(event) {
+  _changeMessage = (event) => {
     this.setState({currentMessage: event.target.value});
   }
 
-  _sendMessage() {
+  _sendMessage = () => {
     this.props.onSend(this.state.currentMessage);
     this.setState({currentMessage: null});
   }

@@ -9,19 +9,20 @@ import Chat from './game-chat';
 
 @connect(mapToProps)
 export default class GameMultiplayer extends Component {
+
   static propTypes = {
     socket: PropTypes.object,
-  };
+  }
 
   static defaultProps = {
     socket: null,
     isStarted: false,
-  };
+  }
 
   state = {
     messages: [],
     socket: null,
-  };
+  }
 
   render() {
 
@@ -38,22 +39,22 @@ export default class GameMultiplayer extends Component {
         hand={player.hand}
         stones={player.stones}
         supply={player.supply}
-        onConnectTile={::this._connectTile}
-        onPlaceStone={::this._placeStone}
-        onRefillHand={::this._refillHand}
+        onConnectTile={this._connectTile}
+        onPlaceStone={this._placeStone}
+        onRefillHand={this._refillHand}
         className={styles.multiplayerGame} />
       <Chat
         playerId={player.id}
         messages={messages}
-        onSend={::this._sendMessage} />
+        onSend={this._sendMessage} />
     </div>;
   }
 
+
   componentWillMount() {
     const socket = io({forceNew: true});
-    socket.on('game_start', ::this._updateState);
-    socket.on('game_state', ::this._updateState);
-    socket.on('chat', ::this._addMessage);
+    socket.on('game_update_state', this._updateState);
+    socket.on('chat', this._addMessage);
     this.setState({socket});
   }
 
@@ -62,32 +63,32 @@ export default class GameMultiplayer extends Component {
     this.setState({socket: null});
   }
 
-  _sendMessage(message) {
-    this.state.socket.emit('chat', message);
+  _emitAction(action) {
+    this.state.socket.emit('game_action', action);
   }
 
-  _addMessage(data) {
-    this.setState({messages: [...this.state.messages, data]});
-  }
-
-  _updateState(gameState) {
+  _updateState = (gameState) => {
     this.props.dispatch(mergeState(gameState));
   }
 
-  _connectTile(tile, i, j) {
+  _connectTile = (tile, i, j) => {
     this._emitAction(connectTile(this.props.player.id, tile.id, tile.rotation, i, j));
   }
 
-  _placeStone(tileId, corner) {
+  _placeStone = (tileId, corner) => {
     this._emitAction(placeStone(this.props.player.id, tileId, corner));
   }
 
-  _refillHand() {
+  _refillHand = () => {
      this._emitAction(refillHand(this.props.player.id, 1));
   }
 
-  _emitAction(action) {
-    this.state.socket.emit('game_action', action);
+  _sendMessage = (message) => {
+    this.state.socket.emit('chat', message);
+  }
+
+  _addMessage = (data) => {
+    this.setState({messages: [...this.state.messages, data]});
   }
 }
 

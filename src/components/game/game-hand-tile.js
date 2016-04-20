@@ -10,23 +10,23 @@ class HandTile extends Component {
     onDragEnd: PropTypes.func.isRequired,
     onRotate: PropTypes.func.isRequired,
     rotation: PropTypes.number,
-  };
+  }
 
   defaultProps = {
     rotation: 0,
-  };
+  }
 
   render() {
     const className = ClassNames(styles.gameHandTile, {
       [styles.gameHandTileDragging]: this.props.isDragging,
     }, this.props.className);
 
-    return <div className={className} onClick={::this._rotate}>
+    return <div className={className} onClick={this._rotate}>
       {this.props.connectDragSource(<div><Tile {...this.props} /></div>)}
     </div>;
   }
 
-  _rotate() {
+  _rotate = () => {
     this.props.onRotate(this.props.id, this.props.rotation + 1);
   }
 }

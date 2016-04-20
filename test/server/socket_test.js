@@ -53,12 +53,12 @@ describe('Multiplayer socket', () => {
     const socket1 = createSocketMock('id1');
     const socket2 = createSocketMock('id2');
 
-    socket1.on('game_start', (gameState) => {
+    socket1.on('game_update_state', (gameState) => {
       expect(gameState.players[1].hand).toBe(6);
       expect(gameState.playerId).toBe(gameState.players[0].id);
     });
 
-    socket2.on('game_start', (gameState) => {
+    socket2.on('game_update_state', (gameState) => {
       expect(gameState.players[0].hand).toBe(6);
       expect(gameState.playerId).toBe(gameState.players[1].id);
     });
@@ -98,13 +98,13 @@ describe('Multiplayer socket', () => {
 
     const gameState = server.games[0];
 
-    socket1.on('game_state', function (nextState) {
+    socket1.on('game_update_state', function (nextState) {
       expect(nextState.players[1].hand).toBe(6);
       expect(nextState.playerId).toEqual(gameState.players[0].id);
       expect(nextState.turnQueue).toEqual([nextState.players[1].id]);
     });
 
-    socket2.on('game_state', function (nextState) {
+    socket2.on('game_update_state', function (nextState) {
       expect(nextState.players[0].hand).toBe(6);
       expect(nextState.playerId).toEqual(gameState.players[1].id);
       expect(nextState.turnQueue).toEqual([nextState.players[1].id]);

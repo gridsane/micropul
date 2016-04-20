@@ -30,3 +30,9 @@ export function shuffle(input) {
 export function arg2str(...args) {
   return args.join('_');
 }
+
+export function bindMethods(obj, methods) {
+  methods.forEach((method) => {
+    obj[method] = obj[method].bind(obj);
+  });
+}

@@ -7,8 +7,8 @@ import Game from './game';
 
 @connect(mapToProps)
 export default class GameMultiplayer extends Component {
-  render() {
 
+  render() {
     const {tiles, player, isStarted} = this.props;
 
     if (!isStarted) {
@@ -21,9 +21,9 @@ export default class GameMultiplayer extends Component {
         hand={player.hand}
         stones={player.stones}
         supply={player.supply}
-        onConnectTile={::this._connectTile}
-        onPlaceStone={::this._placeStone}
-        onRefillHand={::this._refillHand}
+        onConnectTile={this._connectTile}
+        onPlaceStone={this._placeStone}
+        onRefillHand={this._refillHand}
         className={styles.soloGame} />
     </div>;
   }
@@ -32,17 +32,18 @@ export default class GameMultiplayer extends Component {
     this.props.dispatch(start('solo_game', ['solo_player']));
   }
 
-  _connectTile(tile, i, j) {
+  _connectTile = (tile, i, j) => {
     this.props.dispatch(connectTile('solo_player', tile.id, tile.rotation, i, j));
   }
 
-  _placeStone(tileId, corner) {
+  _placeStone = (tileId, corner) => {
     this.props.dispatch(placeStone('solo_player', tileId, corner));
   }
 
-  _refillHand() {
+  _refillHand = () => {
      this.props.dispatch(refillHand('solo_player', 1));
   }
+
 }
 
 export function mapToProps(state) {
