@@ -102,7 +102,7 @@ export function mapToProps(state) {
     isFinished: state.game.isFinished,
     tiles: transformTiles(state.game.board),
     boardStones: state.game.players.reduce((acc, p) => (
-      [...acc, ...p.stones.map((s) => ({...s, playerId: p.id}))]
+      [...acc, ...p.stones.map((s) => ({...s, isOpponent: p.id !== player.id}))]
     ), []),
     player: player
       ? {...player, hand: transformTiles(player.hand)}

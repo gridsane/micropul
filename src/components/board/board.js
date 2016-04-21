@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import shallowCompare from 'react-addons-shallow-compare';
 import styles from './board.scss';
 import Tile from '../tile/tile';
+import Stone from '../stone/stone';
 import TilePlaceholder from './board-tile-placeholder';
 import StonePlaceholder from './board-stone-placeholder';
 import Positionable from './board-positionable';
@@ -10,6 +11,7 @@ export default class Board extends Component {
 
   static propTypes = {
     tiles: PropTypes.array.isRequired,
+    stones: PropTypes.array.isRequired,
     possibleConnections: PropTypes.array.isRequired,
     possibleStonePlaces: PropTypes.array.isRequired,
     onConnectTile: PropTypes.func.isRequired,
@@ -24,7 +26,14 @@ export default class Board extends Component {
   }
 
   render() {
-    const {tiles, possibleConnections, possibleStonePlaces, containerHeight} = this.props;
+    const {
+      tiles,
+      stones,
+      possibleConnections,
+      possibleStonePlaces,
+      containerHeight,
+    } = this.props;
+
     const bounds = getBounds(tiles);
     const boardSize = this._getBoardSize(bounds);
     const veticalMargin = {
@@ -33,7 +42,7 @@ export default class Board extends Component {
 
     return <div className={styles.board} style={{...veticalMargin, ...boardSize}}>
       {tiles.map((tile, i) => {
-        return <Positionable key={`tile-${i}`} {...this._getPosition(bounds, tile.i, tile.j)}>
+        return <Positionable key={i} {...this._getPosition(bounds, tile.i, tile.j)}>
           <Tile
             id={tile.id}
             corners={tile.corners}
@@ -41,9 +50,17 @@ export default class Board extends Component {
         </Positionable>;
       })}
 
+      {stones.map((stone, i) => {
+        return <Positionable
+          key={i}
+          {...this._getPosition(bounds, stone.i, stone.j, 2, .5)}>
+          <Stone isOpponent={stone.isOpponent} />
+        </Positionable>;
+      })}
+
       {possibleConnections.map((placeholder, i) => {
         return <Positionable
-          key={`tile-placholder-${i}`}
+          key={i}
           {...this._getPosition(bounds, placeholder.i, placeholder.j, 1)}>
           <TilePlaceholder onDrop={this.props.onConnectTile} {...placeholder} />
         </Positionable>;
@@ -51,7 +68,7 @@ export default class Board extends Component {
 
       {possibleStonePlaces.map((placeholder, i) => {
         return <Positionable
-          key={`stone-placholder-${i}`}
+          key={i}
           {...this._getPosition(bounds, placeholder.i, placeholder.j, 2, .5)}>
           <StonePlaceholder
             tileId={placeholder.tile.id}

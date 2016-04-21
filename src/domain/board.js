@@ -95,15 +95,33 @@ export function getPossibleStonePlaces(tiles, stones) {
   return corners;
 }
 
+function tileCornerToCoords(tile, cornerIndex) {
+  const imap = [tile.i * 2, tile.i * 2, tile.i * 2 + 1, tile.i * 2 + 1];
+  const jmap = [tile.j * 2, tile.j * 2 + 1, tile.j * 2 + 1, tile.j * 2];
+
+  return {
+    i: imap[cornerIndex],
+    j: jmap[cornerIndex],
+  };
+}
+
+export function getStonesCoords(tiles, stones) {
+  return stones.map((stone) => {
+    const tile = tiles.find(t => t.i === stone.i && t.j === stone.j);
+    return {
+      ...stone,
+      ...tileCornerToCoords(tile, getCornerIndex(stone.corner + tile.rotation)),
+    };
+  });
+}
+
 export function getCorners(tiles) {
   return tiles.reduce((acc, tile) => {
-    const imap = [tile.i * 2, tile.i * 2, tile.i * 2 + 1, tile.i * 2 + 1];
-    const jmap = [tile.j * 2, tile.j * 2 + 1, tile.j * 2 + 1, tile.j * 2];
+
     const rotation = tile.rotation || 0;
     rotateCorners(tile.corners, rotation).forEach((corner, cornerIndex) => {
       acc.push({
-        i: imap[cornerIndex],
-        j: jmap[cornerIndex],
+        ...tileCornerToCoords(tile, cornerIndex),
         corner: getCornerIndex(cornerIndex - rotation),
         micropul: getCornerMicropuls(corner)[0] || null,
         tile: {id: tile.id, i: tile.i, j: tile.j},

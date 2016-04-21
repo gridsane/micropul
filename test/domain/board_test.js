@@ -557,4 +557,22 @@ describe('Board', () => {
     ]);
   });
 
+  it('gets stones coordinates', () => {
+    const tiles = [
+      {i: 0, j: 0, rotation: 0},
+      {i: 0, j: 1, rotation: 1},
+      {i: 1, j: 0, rotation: 0},
+    ];
+
+    const stones = [
+      {i: 0, j: 0, corner: 0},
+      {i: 0, j: 1, corner: 0},
+    ];
+
+    expect(board.getStonesCoords(tiles, stones)).toEqual([
+      {i: 0, j: 0, corner: 0},
+      {i: 0, j: 3, corner: 0},
+    ]);
+  });
+
 });

@@ -1,7 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import {getPossibleConnections, getPossibleStonePlaces} from '../../domain/board';
+import {
+  getPossibleConnections,
+  getPossibleStonePlaces,
+  getStonesCoords,
+} from '../../domain/board';
 import ClassNames from 'classnames';
 import styles from './game.scss';
 import Board from '../board/board-pannable';
@@ -30,13 +34,14 @@ export class Game extends Component {
   }
 
   render() {
-    const {tiles, hand, supply, stonesUsed, className} = this.props;
+    const {tiles, hand, supply, stonesUsed, boardStones, className} = this.props;
     const {possibleConnections, possibleStonePlaces} = this.state;
 
     return <div className={ClassNames(styles.gameRoot, className)}>
       <Board
         tileSize={TILE_SIZE}
         tiles={tiles}
+        stones={getStonesCoords(tiles, boardStones)}
         possibleConnections={possibleConnections}
         possibleStonePlaces={possibleStonePlaces}
         onConnectTile={this.props.onConnectTile}
