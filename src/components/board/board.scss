@@ -12,7 +12,28 @@
 }
 
 .tilePlaceholder {
-  @include tileSize;
+  width: $tileSize - 1;
+  height: $tileSize - 1;
+  position: absolute;
+  transition: background-color .2s ease-out;
+  opacity: .3;
+  background-color: transparent;
+
+  &IsOver {
+    opacity: .5
+  }
+
+  &CanDrop {
+    background-color: $accentColor;
+  }
+}
+
+.stonePlaceholder {
+  width: $tileSize / 2 - 2px;
+  height: $tileSize / 2 - 2px;
+  margin-left: 2px;
+  margin-top: 2px;
+
   position: absolute;
   transition: background-color .2s ease-out;
   opacity: .3;

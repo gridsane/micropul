@@ -9,7 +9,7 @@ import Game from './game';
 export default class GameMultiplayer extends Component {
 
   render() {
-    const {tiles, player, isStarted} = this.props;
+    const {tiles, boardStones, player, isStarted} = this.props;
 
     if (!isStarted) {
       return null;
@@ -19,7 +19,8 @@ export default class GameMultiplayer extends Component {
       <Game
         tiles={tiles}
         hand={player.hand}
-        stones={player.stones}
+        stonesUsed={player.stones.length}
+        boardStones={boardStones}
         supply={player.supply}
         onConnectTile={this._connectTile}
         onPlaceStone={this._placeStone}
@@ -54,6 +55,9 @@ export function mapToProps(state) {
     isStarted,
     isFinished: state.game.isFinished,
     tiles: transformTiles(state.game.board),
+    boardStones: player
+      ? player.stones.map(s => ({...s, playerId: player.id}))
+      : [],
     player: player ? {
       ...player,
       hand: transformTiles(player.hand),

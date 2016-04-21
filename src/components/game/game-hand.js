@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import styles from './game.scss';
-import HandTile from './game-hand-tile';
+import PlayerTile from './game-player-tile';
 
 export default class Hand extends Component {
   static propTypes = {
@@ -26,9 +26,10 @@ export default class Hand extends Component {
       </div>
 
       {tiles.map((tile) => {
-        return <HandTile
+        return <PlayerTile
           key={tile.id}
           {...tile}
+          className={styles.gameHandTile}
           rotation={rotations[tile.id] || 0}
           onDragStart={onUpdatePlaceholders}
           onDragEnd={onClearPlaceholders}

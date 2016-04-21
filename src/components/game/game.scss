@@ -24,18 +24,11 @@
       float: left;
       margin: 2px;
       cursor: pointer;
-      transition: transform .1s ease-out, box-shadow .1s ease-out;
+      transition: box-shadow .1s ease-out;
 
       &:hover {
         box-shadow: 0 0 2px 2px $accentColor;
-        transform: scale(1.05);
         z-index: 10;
-      }
-    }
-
-    &Tile {
-      &Dragging {
-        opacity: .5;
       }
     }
 
@@ -51,6 +44,26 @@
       &Total {
         font-size: 24px;
         line-height: 42px;
+      }
+    }
+  }
+
+  &Player {
+    &Tile {
+      transition: transform .1s ease-out;
+
+      &Dragging {
+        opacity: .5;
+      }
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    &Stone {
+      &Dragging {
+        opacity: .5;
       }
     }
   }

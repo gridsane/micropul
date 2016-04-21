@@ -2,16 +2,18 @@ import React, {Component, PropTypes} from 'react';
 import shallowCompare from 'react-addons-shallow-compare';
 import styles from './board.scss';
 import Tile from '../tile/tile';
-import Placeholder from './board-tile-placeholder';
+import TilePlaceholder from './board-tile-placeholder';
+import StonePlaceholder from './board-stone-placeholder';
 import Positionable from './board-positionable';
 
 export default class Board extends Component {
 
   static propTypes = {
     tiles: PropTypes.array.isRequired,
-    placeholders: PropTypes.array.isRequired,
+    possibleConnections: PropTypes.array.isRequired,
+    possibleStonePlaces: PropTypes.array.isRequired,
     onConnectTile: PropTypes.func.isRequired,
-    onCornerClick: PropTypes.func.isRequired,
+    onPlaceStone: PropTypes.func.isRequired,
     tileSize: PropTypes.number,
     containerHeight: PropTypes.number,
   }
@@ -22,7 +24,7 @@ export default class Board extends Component {
   }
 
   render() {
-    const {tiles, placeholders, containerHeight} = this.props;
+    const {tiles, possibleConnections, possibleStonePlaces, containerHeight} = this.props;
     const bounds = getBounds(tiles);
     const boardSize = this._getBoardSize(bounds);
     const veticalMargin = {
@@ -35,14 +37,26 @@ export default class Board extends Component {
           <Tile
             id={tile.id}
             corners={tile.corners}
-            rotation={tile.rotation}
-            onCornerClick={this.props.onCornerClick} />
+            rotation={tile.rotation} />
         </Positionable>;
       })}
 
-      {placeholders.map((placeholder, i) => {
-        return <Positionable key={`placholder-${i}`} {...this._getPosition(bounds, placeholder.i, placeholder.j)}>
-          <Placeholder onDrop={this.props.onConnectTile} {...placeholder} />
+      {possibleConnections.map((placeholder, i) => {
+        return <Positionable
+          key={`tile-placholder-${i}`}
+          {...this._getPosition(bounds, placeholder.i, placeholder.j, 1)}>
+          <TilePlaceholder onDrop={this.props.onConnectTile} {...placeholder} />
+        </Positionable>;
+      })}
+
+      {possibleStonePlaces.map((placeholder, i) => {
+        return <Positionable
+          key={`stone-placholder-${i}`}
+          {...this._getPosition(bounds, placeholder.i, placeholder.j, 2, .5)}>
+          <StonePlaceholder
+            tileId={placeholder.tile.id}
+            corner={placeholder.corner}
+            onDrop={this.props.onPlaceStone} />
         </Positionable>;
       })}
     </div>;
@@ -52,14 +66,15 @@ export default class Board extends Component {
     return shallowCompare(this, nextProps, nextState);
   }
 
-  _getPosition(bounds, i, j) {
-    const positiveI = Math.abs(bounds.minI) + i + 1;
-    const positiveJ = Math.abs(bounds.minJ) + j + 1;
+  _getPosition(bounds, i, j, zMod = 0, gridMod = 1) {
+    const tileSize = this.props.tileSize;
+    const positiveI = Math.abs(bounds.minI) / gridMod + i;
+    const positiveJ = Math.abs(bounds.minJ) / gridMod + j;
 
     return {
-      x: positiveJ * (this.props.tileSize - 1),
-      y: positiveI * (this.props.tileSize - 1),
-      z: positiveI + positiveJ,
+      x: (positiveJ * (tileSize - 1)) * gridMod + tileSize,
+      y: (positiveI * (tileSize - 1)) * gridMod + tileSize,
+      z: positiveI + positiveJ + zMod + 2,
     };
   }
 

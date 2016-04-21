@@ -525,4 +525,36 @@ describe('Board', () => {
     expect(board.isGroupClosed(tiles, closedGroup)).toBe(true);
   });
 
+  it('returns possible stone places', () => {
+    const tiles = [
+      {
+        id: 1,
+        i: 0, j: 0,
+        corners: [[1], [1], [3], [1]],
+      },
+      {
+        id: 2,
+        i: 0, j: 1,
+        corners: [[1], [3], [2], [0]],
+      },
+      {
+        id: 3,
+        i: 1, j: 0,
+        corners: [[1], [2], [5], [2]],
+      },
+    ];
+
+    // (1) 1 | 1 3
+    // 1   3 | 0 2
+    // -   -
+    // 1   2
+    // 2   5
+
+    expect(board.getPossibleStonePlaces(tiles, [{i: 0, j: 0, corner: 0}])).toEqual([
+      {i: 1, j: 3, micropul: 2, corner: 2, tile: {id: 2, i: 0, j: 1}},
+      {i: 2, j: 1, micropul: 2, corner: 1, tile: {id: 3, i: 1, j: 0}},
+      {i: 3, j: 0, micropul: 2, corner: 3, tile: {id: 3, i: 1, j: 0}},
+    ]);
+  });
+
 });

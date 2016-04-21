@@ -2,14 +2,12 @@ import React, {Component, PropTypes} from 'react';
 import {DragSource} from 'react-dnd';
 import ClassNames from 'classnames';
 import styles from './game.scss';
-import Tile from '../tile/tile';
+import Stone from '../stone/stone';
 
-class HandTile extends Component {
+class PlayerStone extends Component {
   static propTypes = {
     onDragStart: PropTypes.func.isRequired,
     onDragEnd: PropTypes.func.isRequired,
-    onRotate: PropTypes.func.isRequired,
-    rotation: PropTypes.number,
   }
 
   defaultProps = {
@@ -17,21 +15,17 @@ class HandTile extends Component {
   }
 
   render() {
-    const className = ClassNames(styles.gameHandTile, {
-      [styles.gameHandTileDragging]: this.props.isDragging,
+    const className = ClassNames(styles.gamePlayerStone, {
+      [styles.gamePlayerStoneDragging]: this.props.isDragging,
     }, this.props.className);
 
-    return <div className={className} onClick={this._rotate}>
-      {this.props.connectDragSource(<div><Tile {...this.props} /></div>)}
+    return <div className={className}>
+      {this.props.connectDragSource(<div><Stone /></div>)}
     </div>;
-  }
-
-  _rotate = () => {
-    this.props.onRotate(this.props.id, this.props.rotation + 1);
   }
 }
 
-export default DragSource('tile', {
+export default DragSource('stone', {
   beginDrag(props) {
     props.onDragStart(props);
     return props;
@@ -43,4 +37,4 @@ export default DragSource('tile', {
 }, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
   isDragging: monitor.isDragging(),
-}))(HandTile);
+}))(PlayerStone);

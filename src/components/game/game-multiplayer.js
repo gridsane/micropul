@@ -27,7 +27,7 @@ export default class GameMultiplayer extends Component {
   render() {
 
     const {messages} = this.state;
-    const {isStarted, tiles, player} = this.props;
+    const {isStarted, tiles, boardStones, player} = this.props;
 
     if (!isStarted) {
       return <div>waiting for players...</div>;
@@ -37,8 +37,9 @@ export default class GameMultiplayer extends Component {
       <Game
         tiles={tiles}
         hand={player.hand}
-        stones={player.stones}
         supply={player.supply}
+        stonesUsed={player.stones.length}
+        boardStones={boardStones}
         onConnectTile={this._connectTile}
         onPlaceStone={this._placeStone}
         onRefillHand={this._refillHand}
@@ -100,6 +101,9 @@ export function mapToProps(state) {
     isStarted,
     isFinished: state.game.isFinished,
     tiles: transformTiles(state.game.board),
+    boardStones: state.game.players.reduce((acc, p) => (
+      [...acc, ...p.stones.map((s) => ({...s, playerId: p.id}))]
+    ), []),
     player: player
       ? {...player, hand: transformTiles(player.hand)}
       : null,

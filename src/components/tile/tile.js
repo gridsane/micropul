@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react';
 import shallowCompare from 'react-addons-shallow-compare';
-import {curried} from '../../utils';
 import styles from './tile.scss';
 
 export default class Tile extends Component {
@@ -9,12 +8,10 @@ export default class Tile extends Component {
     id: PropTypes.number.isRequired,
     corners: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
     rotation: PropTypes.number.isRequired,
-    onCornerClick: PropTypes.func,
   };
 
   render() {
     const {corners, rotation} = this.props;
-    // <rect x={0} y={0} width={64} height={64} className={styles.tileBackground} />
 
     return <div className={styles.tile}>
       <svg
@@ -42,11 +39,8 @@ export default class Tile extends Component {
 
         return <g
           key={cornerIndex}
-          onClick={curried(::this._clickCorner, cornerIndex)}
           transform={`translate(${x} ${y}) rotate(${90 * cornerIndex}, 16, 16)`}>
-
           {cornerElements[cornerValues.join('')]}
-
         </g>;
 
       })}
@@ -55,12 +49,6 @@ export default class Tile extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState);
-  }
-
-  _clickCorner(cornerIndex) {
-    if (typeof this.props.onCornerClick === 'function') {
-      this.props.onCornerClick(this.props.id, cornerIndex);
-    }
   }
 }
 

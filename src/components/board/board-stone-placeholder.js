@@ -4,9 +4,8 @@ import ClassNames from 'classnames';
 import styles from './board.scss';
 
 const dropSpec = {
-  drop(props, monitor) {
-    const {id, rotation} = monitor.getItem();
-    props.onDrop({id, rotation}, props.i, props.j);
+  drop(props) {
+    props.onDrop(props.tileId, props.corner);
   },
 };
 
@@ -18,23 +17,23 @@ function dropCollect(connect, monitor) {
   };
 }
 
-@DropTarget('tile', dropSpec, dropCollect)
-export default class TilePlaceholder extends Component {
+@DropTarget('stone', dropSpec, dropCollect)
+export default class StonePlaceholder extends Component {
 
   static propTypes = {
     canDrop: PropTypes.bool.isRequired,
     isOver: PropTypes.bool.isRequired,
     connectDropTarget: PropTypes.func.isRequired,
     onDrop: PropTypes.func.isRequired,
-    i: PropTypes.number.isRequired,
-    j: PropTypes.number.isRequired,
+    tileId: PropTypes.number.isRequired,
+    corner: PropTypes.number.isRequired,
   };
 
   render() {
     const {connectDropTarget, isOver, canDrop} = this.props;
-    const className = ClassNames(styles.tilePlaceholder, {
-      [styles.tilePlaceholderIsOver]: isOver,
-      [styles.tilePlaceholderCanDrop]: canDrop,
+    const className = ClassNames(styles.stonePlaceholder, {
+      [styles.stonePlaceholderIsOver]: isOver,
+      [styles.stonePlaceholderCanDrop]: canDrop,
     });
 
     return connectDropTarget(<div className={className}></div>);

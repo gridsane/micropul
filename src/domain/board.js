@@ -79,6 +79,22 @@ export function getPossibleConnections(tiles, tile) {
   }, []);
 }
 
+export function getPossibleStonePlaces(tiles, stones) {
+  const groupHashes = stones.reduce((acc, stone) => {
+    acc.push(...getGroup(tiles, stone.i, stone.j, stone.corner).map((g) => {
+      return arg2str(g.i, g.j, g.corner);
+    }));
+
+    return acc;
+  }, []);
+
+  const corners = getCorners(tiles).filter((c) => (
+    c.micropul && -1 === groupHashes.indexOf(arg2str(c.tile.i, c.tile.j, c.corner))
+  ));
+
+  return corners;
+}
+
 export function getCorners(tiles) {
   return tiles.reduce((acc, tile) => {
     const imap = [tile.i * 2, tile.i * 2, tile.i * 2 + 1, tile.i * 2 + 1];
