@@ -6,6 +6,7 @@ import ClassNames from 'classnames';
 import styles from './game.scss';
 import Board from '../board/board-pannable';
 import Hand from './game-hand';
+import Stones from './game-stones';
 
 const TILE_SIZE = 64;
 
@@ -39,10 +40,7 @@ export class Game extends Component {
         onCornerClick={::this.props.onPlaceStone} />
 
       <div className={styles.gamePlayer}>
-        <div className={styles.gameStones}>
-          <div className={styles.gameStonesLabel}>Stones</div>
-          <div className={styles.gameStonesTotal}>{3 - stones.length}</div>
-        </div>
+        <Stones stones={stones} />
         <Hand
           tiles={hand}
           supply={supply}

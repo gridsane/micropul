@@ -1,0 +1,18 @@
+@import '../application/_color.scss';
+
+@mixin StoneGradient($color) {
+  background: radial-gradient(circle at 30% 30%, saturate(rgba($color, 0), 90%), $color 60%);
+  border: 1px solid darken($color, 10%);
+}
+
+.stone {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+
+  @include StoneGradient($accentColor);
+
+  &Opponent {
+    @include StoneGradient($contrastColor);
+  }
+}
