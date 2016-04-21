@@ -5,6 +5,8 @@ $tileSize: 64px;
 @mixin tileSize {
   width: $tileSize;
   height: $tileSize;
+  min-width: $tileSize;
+  min-height: $tileSize;
 }
 
 .tile {

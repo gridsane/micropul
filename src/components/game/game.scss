@@ -10,18 +10,12 @@
     align-items: stretch;
   }
 
-  &Player {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-  }
-
   &Hand {
     flex-grow: 1;
 
     &Tile, &Supply {
-      display: inline-block;
       float: left;
+      display: inline-block;
       margin: 2px;
       cursor: pointer;
       transition: box-shadow .1s ease-out;
@@ -48,6 +42,10 @@
   }
 
   &Player {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+
     &Tile {
       transition: transform .1s ease-out;
 
@@ -107,6 +105,84 @@
 
 }
 
+.chat {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  flex-direction: column;
+  padding-bottom: 36px;
+  min-width: 250px;
+  max-width: 250px;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  font-size: 14px;
+
+  &Message {
+    &Author {
+      font-weight: 800;
+      color: $accentColor;
+
+      &Opponent {
+        color: $contrastColor;
+      }
+
+      &:after {
+        content: ': ';
+      }
+    }
+
+    &Text {
+
+    }
+  }
+
+  &Send {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 28px;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    box-sizing: border-box;
+    padding-right: 12px;
+    font-size: 14px;
+
+    &Input {
+      flex-grow: 2;
+      border: 1px solid rgba($primaryColor, .3);
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+      color: $primaryColor;
+      padding: 0 8px;
+      font-size: 14px;
+      &:focus {
+        outline: none;
+        border-color: $accentColor;
+      }
+    }
+
+    &Button {
+      margin-left: -1px;
+      flex-grow: 1;
+      border: 2px solid transparent;
+      background: $accentColor;
+      color: #fff;
+      font-size: 12px;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+      box-sizing: border-box;
+
+      &:focus {
+        outline: none;
+        border-color: darken($accentColor, 25%);
+      }
+    }
+  }
+}
+
 .solo {
 
   &Root {
@@ -118,3 +194,4 @@
   }
 
 }
+

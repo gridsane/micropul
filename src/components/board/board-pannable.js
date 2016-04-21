@@ -19,6 +19,7 @@ export default class PannableBoard extends Component {
     return <div className={className} ref="container">
       {width && height
         ? <ElementPan
+            className={styles.boardElementPan}
             width={width}
             height={height}
             startX={startX}

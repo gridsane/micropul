@@ -1,4 +1,6 @@
 import React, {Component, PropTypes} from 'react';
+import ClassNames from 'classnames';
+import styles from './game.scss';
 
 export default class Chat extends Component {
   static propTypes = {
@@ -15,22 +17,32 @@ export default class Chat extends Component {
     const {messages, playerId} = this.props;
     const {currentMessage} = this.state;
 
-    return <aside style={styles.container}>
+    return <aside className={styles.chat}>
       {messages.map((msg, i) => {
-        return <div key={i}>
-          <strong>{msg.playerId === playerId ? 'you' : 'opp'}</strong>:
-          {msg.message}
+        const isOpponent = msg.playerId !== playerId;
+
+        return <div key={i} className={styles.chatMessage}>
+          <span className={ClassNames(styles.chatMessageAuthor, {
+            [styles.chatMessageAuthorOpponent]: isOpponent,
+          })}>
+            {isOpponent ? 'opp' : 'you'}
+          </span>
+          <span className={styles.chatMessageText}>
+            {msg.message}
+          </span>
         </div>;
       })}
-      <div style={styles.sendContainer}>
+      <div className={styles.chatSend}>
         <input
+          onKeyUp={this._keySendMessage}
           onChange={this._changeMessage}
           value={currentMessage}
+          placeholder="Type your message!"
           type="text"
-          style={styles.sendInput} />
+          className={styles.chatSendInput} />
         <button
           onClick={this._sendMessage}
-          style={styles.sendButton}>Send</button>
+          className={styles.chatSendButton}>Send</button>
       </div>
     </aside>;
   }
@@ -40,38 +52,17 @@ export default class Chat extends Component {
   }
 
   _sendMessage = () => {
+    if (this.state.currentMessage.length === 0) {
+      return;
+    }
+
     this.props.onSend(this.state.currentMessage);
-    this.setState({currentMessage: null});
+    this.setState({currentMessage: ''});
+  }
+
+  _keySendMessage = (e) => {
+    if (e.keyCode === 13) {
+      this._sendMessage();
+    }
   }
 }
-
-const styles = {
-  container: {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'stretch',
-    justifyContent: 'flex-end',
-    flexDirection: 'column',
-    paddingBottom: 24,
-    width: 200,
-    maxWidth: 200,
-    height: '100%',
-    boxSizing: 'border-box',
-    overflowY: 'auto',
-  },
-  sendContainer: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    height: 24,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'stretch',
-  },
-  sendInput: {
-    flexGrow: 5,
-  },
-  sendButton: {
-    flexGrow: 1,
-  },
-};

@@ -10,6 +10,8 @@ import {
 import {atIndex, shuffle, arg2str} from '../utils';
 import update from 'react-addons-update';
 
+const START_TILE_COUNT = 6;
+
 const initialState = {
   gameId: null,
   playerId: null,
@@ -45,17 +47,17 @@ const handlers = {
     const tilesOnHands = getRandomTiles({
       board: [],
       players: [],
-    }, action.playersIds.length * 6);
+    }, action.playersIds.length * START_TILE_COUNT);
 
     return {
       gameId: action.gameId,
       playerId: state.playerId,
       players: action.playersIds.map((id, index) => {
-        const startHandIndex = Math.max(0, (index * 6) - 1);
+        const startHandIndex = Math.max(0, (index * START_TILE_COUNT) - 1);
         return {
           id,
           supply: 0,
-          hand: tilesOnHands.slice(startHandIndex, startHandIndex + 6),
+          hand: tilesOnHands.slice(startHandIndex, startHandIndex + START_TILE_COUNT),
           stones: [],
           score: 0,
         };
