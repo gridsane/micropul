@@ -3,20 +3,40 @@
 
 .game {
 
-  &Root {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 
-  &Hand {
-    flex-grow: 1;
+  &Player {
 
-    &Tile, &Supply {
-      float: left;
+    &Item {
       display: inline-block;
-      margin: 2px;
+      float: left;
+      @include tileSize;
+      margin: 4px;
+      text-align: center;
+
+      &Label {
+        font-size: 14px;
+        line-height: 24px;
+      }
+
+      &Value {
+        font-size: 24px;
+        line-height: 38px;
+      }
+    }
+
+    @mixin hoverScale($val) {
+      transition: transform .1s ease-out;
+
+      &:hover {
+        transform: scale($val);
+      }
+    }
+
+    &Supply, &Tile {
       cursor: pointer;
       transition: box-shadow .1s ease-out;
 
@@ -25,79 +45,27 @@
       }
     }
 
-    &Supply {
-      @include tileSize;
-      text-align: center;
-
-      &Label {
-        font-size: 14px;
-        line-height: 20px;
-      }
-
-      &Total {
-        font-size: 24px;
-        line-height: 42px;
-      }
-    }
-  }
-
-  &Player {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-
-    &Tile {
-      transition: transform .1s ease-out;
-
-      &Dragging {
-        opacity: .5;
-      }
-
-      &:hover {
-        transform: scale(1.05);
-      }
-    }
-
-    &Stone {
-      &Dragging {
-        opacity: .5;
-      }
-    }
-  }
-
-  &Stones {
-    @include tileSize;
-    margin: 2px;
-    text-align: center;
-
-    &Label {
-      font-size: 14px;
-      line-height: 20px;
-      margin-bottom: 12px;
-    }
-
     &Stone {
       display: inline-block;
-      margin: 1px;
+      margin: 10px 1px;
       cursor: pointer;
-      transition: transform .1s ease-out;
 
-      &:hover {
-        transform: scale(1.2);
-      }
+      @include hoverScale(1.2);
     }
-  }
 
+    &Tile {
+      @include hoverScale(1.1);
+    }
+
+  }
 }
 
 .multiplayer {
 
-  &Root {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    height: 100%;
-  }
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  height: 100%;
 
   &Game {
     flex-grow: 2;
@@ -185,13 +153,8 @@
 
 .solo {
 
-  &Root {
-    width: 100%;
-    height: 100%;
-  }
-
-  &Game {
-  }
+  width: 100%;
+  height: 100%;
 
 }
 

@@ -17,7 +17,7 @@ class PlayerTile extends Component {
   }
 
   render() {
-    const className = ClassNames(styles.gamePlayerTile, {
+    const className = ClassNames({
       [styles.gamePlayerTileDragging]: this.props.isDragging,
     }, this.props.className);
 

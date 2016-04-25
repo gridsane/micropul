@@ -9,14 +9,15 @@ import Game from './game';
 export default class GameMultiplayer extends Component {
 
   render() {
-    const {tiles, boardStones, player, isStarted} = this.props;
+    const {core, tiles, boardStones, player, isStarted} = this.props;
 
     if (!isStarted) {
       return null;
     }
 
-    return <div className={styles.soloRoot}>
+    return <div className={styles.solo}>
       <Game
+        core={core}
         tiles={tiles}
         hand={player.hand}
         stonesUsed={player.stones.length}
@@ -55,6 +56,7 @@ export function mapToProps(state) {
     isStarted,
     isFinished: state.game.isFinished,
     tiles: transformTiles(state.game.board),
+    core: 48 - (player ? (player.hand.length + player.supply) : 0) - state.game.board.length,
     boardStones: player
       ? player.stones.map(s => ({...s, isOpponent: false}))
       : [],

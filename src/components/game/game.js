@@ -9,14 +9,14 @@ import {
 import ClassNames from 'classnames';
 import styles from './game.scss';
 import Board from '../board/board-pannable';
-import Hand from './game-hand';
-import Stones from './game-stones';
+import Player from './game-player';
 
 const TILE_SIZE = 64;
 
 export class Game extends Component {
 
   static propTypes = {
+    core: PropTypes.number.isRequired,
     tiles: PropTypes.array.isRequired,
     hand: PropTypes.array.isRequired,
     stonesUsed: PropTypes.number.isRequired,
@@ -34,10 +34,10 @@ export class Game extends Component {
   }
 
   render() {
-    const {tiles, hand, supply, stonesUsed, boardStones, className} = this.props;
+    const {core, tiles, hand, supply, stonesUsed, boardStones, className} = this.props;
     const {possibleConnections, possibleStonePlaces} = this.state;
 
-    return <div className={ClassNames(styles.gameRoot, className)}>
+    return <div className={ClassNames(styles.game, className)}>
       <Board
         tileSize={TILE_SIZE}
         tiles={tiles}
@@ -47,34 +47,32 @@ export class Game extends Component {
         onConnectTile={this.props.onConnectTile}
         onPlaceStone={this.props.onPlaceStone} />
 
-      <div className={styles.gamePlayer}>
-        <Stones
-          stonesUsed={stonesUsed}
-          onUpdatePlaceholders={this._updatePossibleStonePlaces}
-          onClearPlaceholders={this._clearPossibleStonePlaces} />
-        <Hand
+      <Player
+          core={core}
           tiles={hand}
           supply={supply}
-          onUpdatePlaceholders={this._updatePossibleConnections}
-          onClearPlaceholders={this._clearPossibleConnections}
-          onRefill={this.props.onRefillHand}/>
-      </div>
+          stonesUsed={stonesUsed}
+          onUpdateTilePlaceholders={this._updateTilePlaceholders}
+          onClearTilePlaceholders={this._clearTilePlaceholders}
+          onUpdateStonePlaceholders={this._updateStonePlaceholders}
+          onClearStonePlaceholders={this._clearStonePlaceholders}
+          onRefill={this.props.onRefillHand} />
     </div>;
   }
 
-  _updatePossibleConnections = (tile) => {
+  _updateTilePlaceholders = (tile) => {
     this.setState({possibleConnections: getPossibleConnections(this.props.tiles, tile)});
   }
 
-  _clearPossibleConnections = () => {
+  _clearTilePlaceholders = () => {
     this.setState({possibleConnections: []});
   }
 
-  _updatePossibleStonePlaces = () => {
+  _updateStonePlaceholders = () => {
     this.setState({possibleStonePlaces: getPossibleStonePlaces(this.props.tiles, this.props.boardStones)});
   };
 
-  _clearPossibleStonePlaces = () => {
+  _clearStonePlaceholders = () => {
     this.setState({possibleStonePlaces: []});
   }
 }

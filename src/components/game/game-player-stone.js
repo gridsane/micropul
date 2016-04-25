@@ -15,7 +15,7 @@ class PlayerStone extends Component {
   }
 
   render() {
-    const className = ClassNames(styles.gamePlayerStone, {
+    const className = ClassNames({
       [styles.gamePlayerStoneDragging]: this.props.isDragging,
     }, this.props.className);
 

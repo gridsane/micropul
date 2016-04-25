@@ -27,14 +27,15 @@ export default class GameMultiplayer extends Component {
   render() {
 
     const {messages} = this.state;
-    const {isStarted, tiles, boardStones, player} = this.props;
+    const {isStarted, core, tiles, boardStones, player} = this.props;
 
     if (!isStarted) {
       return <div>waiting for players...</div>;
     }
 
-    return <div className={styles.multiplayerRoot}>
+    return <div className={styles.multiplayer}>
       <Game
+        core={core}
         tiles={tiles}
         hand={player.hand}
         supply={player.supply}
@@ -96,6 +97,12 @@ export default class GameMultiplayer extends Component {
 export function mapToProps(state) {
   const isStarted = Boolean(state.game.startedAt);
   const player = state.game.players.find((p) => p.id === state.game.playerId);
+  const opponents = player ? state.game.players.filter((p) => p.id !== player.id) : [];
+  const core = 48 - state.game.board.length - (player
+    ? player.hand.length + player.supply + opponents.reduce((acc, p) => (
+        acc + p.supply + p.hand
+      ), 0)
+    : 0);
 
   return {
     isStarted,
@@ -107,8 +114,7 @@ export function mapToProps(state) {
     player: player
       ? {...player, hand: transformTiles(player.hand)}
       : null,
-    opponents: player
-      ? state.game.players.filter((p) => p.id !== player.id)
-      : [],
+    opponents,
+    core,
   };
 }
