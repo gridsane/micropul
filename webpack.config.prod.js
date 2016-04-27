@@ -1,8 +1,10 @@
 var path = require('path');
 var webpack = require('webpack');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var autoprefixer = require('autoprefixer');
 
 module.exports = {
-  devtool: 'source-map',
+  devtool: 'eval',
   entry: [
     'babel-polyfill',
     './src/client',
@@ -13,6 +15,7 @@ module.exports = {
     publicPath: '/assets/',
   },
   plugins: [
+    new ExtractTextPlugin('style.css', {allChunks: true}),
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.DefinePlugin({
       'process.env': {
@@ -27,11 +30,23 @@ module.exports = {
     }),
   ],
   module: {
-    loaders: [{
-      test: /\.js$/,
-      exclude: /node_modules/,
-      include: path.join(__dirname, 'src'),
-      loaders: ['babel-loader'],
-    }],
+    loaders: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        include: path.join(__dirname, 'src'),
+        loaders: ['babel-loader'],
+      },
+      {
+        test: /\.(scss|css)$/,
+        exclude: /node_modules/,
+        include: path.join(__dirname, 'src'),
+        loader: ExtractTextPlugin.extract(
+          'style-loader',
+          'css-loader?modules&importLoaders=1&localIdentName=[hash:base64:5]!postcss-loader!sass-loader'
+        ),
+      },
+    ],
   },
+  postcss: [autoprefixer],
 };

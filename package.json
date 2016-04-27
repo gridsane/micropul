@@ -5,7 +5,7 @@
   "author": "gridsane <gridsane@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "clean": "rm -rf assets/*.js assets/*.map build",
+    "clean": "rm -rf assets/*.{js,css,map} build",
     "build": "npm run clean && npm run build-client && npm run build-server",
     "build-client": "webpack --config webpack.config.prod.js",
     "build-server": "babel -d build src",
@@ -23,6 +23,7 @@
     "css-loader": "^0.23.1",
     "expose-loader": "^0.7.1",
     "express": "^4.13.3",
+    "extract-text-webpack-plugin": "^1.0.1",
     "node-sass": "^3.4.2",
     "postcss-loader": "^0.8.2",
     "react": "^15.0.1",

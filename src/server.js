@@ -29,6 +29,7 @@ if (process.env.NODE_ENV !== 'production') {
   }));
 
   app.use(require('webpack-hot-middleware')(compiler));
+  app.get('/assets/style.css', (req, res) => res.send(''));
 }
 
 app
