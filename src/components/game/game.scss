@@ -3,10 +3,11 @@
 
 .game {
 
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  width: 100%;
+  height: 100%;
 
   &Player {
 
@@ -58,6 +59,60 @@
     }
 
   }
+
+  &Finish {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba($backgroundColor, .9);
+
+    &Win, &Draw {
+      color: $primaryColor;
+    }
+
+    &Lose {
+      color: $contrastColor;
+    }
+
+    &Score {
+      display: flex;
+      flex-direction: row;
+
+      &Label {
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+
+      &Your, &Opponent {
+        font-size: 1.3em;
+        font-weight: 800;
+      }
+
+      &Your {
+        color: $accentColor;
+      }
+
+      &Opponent {
+        color: $contrastColor;
+
+        &:before {
+          content: 'vs';
+          color: $primaryColor;
+          font-size: .8em;
+          margin: 0 .8em;
+          font-weight: 400;
+        }
+      }
+    }
+  }
 }
 
 .multiplayer {
@@ -69,6 +124,8 @@
 
   &Game {
     flex-grow: 2;
+    position: relative;
+    height: 100%;
   }
 
 }
@@ -152,9 +209,7 @@
 }
 
 .solo {
-
-  width: 100%;
+  position: relative;
   height: 100%;
-
 }
 

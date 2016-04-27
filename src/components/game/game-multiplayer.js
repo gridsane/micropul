@@ -6,6 +6,7 @@ import {transformTiles} from '../../domain/board';
 import styles from './game.scss';
 import Game from './game';
 import Chat from './game-chat';
+import Finish from './game-finish';
 
 @connect(mapToProps)
 export default class GameMultiplayer extends Component {
@@ -27,24 +28,31 @@ export default class GameMultiplayer extends Component {
   render() {
 
     const {messages} = this.state;
-    const {isStarted, core, tiles, boardStones, player} = this.props;
+    const {isStarted, isFinished, core, tiles, boardStones, player, opponents} = this.props;
 
     if (!isStarted) {
       return <div>waiting for players...</div>;
     }
 
     return <div className={styles.multiplayer}>
-      <Game
-        core={core}
-        tiles={tiles}
-        hand={player.hand}
-        supply={player.supply}
-        stonesUsed={player.stones.length}
-        boardStones={boardStones}
-        onConnectTile={this._connectTile}
-        onPlaceStone={this._placeStone}
-        onRefillHand={this._refillHand}
-        className={styles.multiplayerGame} />
+      <div className={styles.multiplayerGame}>
+        {isFinished
+          ? <Finish
+              playerScore={player.score + 100}
+              opponentScore={opponents[0].score + 99}
+            />
+          : null}
+        <Game
+          core={core}
+          tiles={tiles}
+          hand={player.hand}
+          supply={player.supply}
+          stonesUsed={player.stones.length}
+          boardStones={boardStones}
+          onConnectTile={this._connectTile}
+          onPlaceStone={this._placeStone}
+          onRefillHand={this._refillHand} />
+      </div>
       <Chat
         playerId={player.id}
         messages={messages}

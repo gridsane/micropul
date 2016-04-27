@@ -4,18 +4,19 @@ import {start, connectTile, placeStone, refillHand} from '../../actions/game';
 import {transformTiles} from '../../domain/board';
 import styles from './game.scss';
 import Game from './game';
+import Finish from './game-finish';
 
 @connect(mapToProps)
 export default class GameMultiplayer extends Component {
 
   render() {
-    const {core, tiles, boardStones, player, isStarted} = this.props;
+    const {core, tiles, boardStones, player, isStarted, isFinished} = this.props;
 
     if (!isStarted) {
       return null;
     }
-
     return <div className={styles.solo}>
+      {isFinished ? <Finish playerScore={player.score + 300} /> : null}
       <Game
         core={core}
         tiles={tiles}
@@ -54,6 +55,7 @@ export function mapToProps(state) {
 
   return {
     isStarted,
+    isFinished: state.game.isFinished,
     isFinished: state.game.isFinished,
     tiles: transformTiles(state.game.board),
     core: 48 - (player ? (player.hand.length + player.supply) : 0) - state.game.board.length,
