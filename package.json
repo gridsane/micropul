@@ -20,6 +20,7 @@
     "babel-polyfill": "^6.2.0",
     "body-parser": "^1.14.1",
     "classnames": "^2.2.3",
+    "compression": "^1.6.1",
     "css-loader": "^0.23.1",
     "expose-loader": "^0.7.1",
     "express": "^4.13.3",

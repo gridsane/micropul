@@ -1,6 +1,7 @@
 import 'babel-polyfill';
 import http from 'http';
 import express from 'express';
+import compression from 'compression';
 import socketio from 'socket.io';
 import bodyParser from 'body-parser';
 import path from 'path';
@@ -30,9 +31,12 @@ if (process.env.NODE_ENV !== 'production') {
 
   app.use(require('webpack-hot-middleware')(compiler));
   app.get('/assets/style.css', (req, res) => res.send(''));
+} else {
+  app.use(compression());
 }
 
 app
+  .disable('x-powered-by')
   .use(bodyParser.json())
   .use('/assets', express.static(__dirname + '/../assets'))
   .get('/', (req, res) => {
