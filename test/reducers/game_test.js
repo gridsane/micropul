@@ -337,6 +337,26 @@ describe('Game reducer', () => {
     expect(nextState.isFinished).toBe(true);
   });
 
+  it('finishes a game when player has no tiles', () => {
+    const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
+
+    startState.players[0].hand = [];
+    startState.players[0].supply = 1;
+    startState.players[1].hand = [{id: 1, rotation: 0}];
+
+    // 1 1
+    // 2 2
+    // + +
+    // 2 2
+    // 1 1
+
+    let nextState = reducer(startState, actions.refillHand('id1'));
+    expect(nextState.isFinished).toBe(false);
+
+    nextState = reducer(nextState, actions.connectTile('id2', 1, 0, 1, 0));
+    expect(nextState.isFinished).toBe(true);
+  });
+
   it('calculates a score when game was finished', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
     startState.board = [

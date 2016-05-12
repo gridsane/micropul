@@ -152,7 +152,6 @@ const handlers = {
       + (catalysts.filter(c => c === 4).length * 2)
     );
 
-    const isFinished = (getCoreTilesCount(state) - supplyIncrement) <= 0;
     const nextBoardTiles = [...boardTiles, {...tile, i, j}];
     const nextState = update(state, {
       board: {$push: [{id: tileId, i, j, rotation}]},
@@ -169,16 +168,18 @@ const handlers = {
         },
       },
       updatedAt: setNow(),
-      isFinished: {$set: isFinished},
       ...nextTurn,
     });
 
-    if (isFinished) {
+    const playerHasTiles = (player.hand.length + player.supply) > 1;
+
+    if (getCoreTilesCount(nextState) <= 0 || !playerHasTiles) {
       const scores = calculateScores(nextState, nextBoardTiles);
       return update(nextState, {
         players: {$set: nextState.players.map((player) => {
           return {...player, score: scores[player.id]};
         })},
+        isFinished: {$set: true},
       });
     }
 
