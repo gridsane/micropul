@@ -312,17 +312,28 @@ describe('Game reducer', () => {
     expect({...nextState, turnQueue: ['id1']}).toEqual({...startState, turnQueue: ['id1']});
   });
 
-  it('finishes a game when last tile connected', () => {
+  it('finishes a game when last core tile drawn', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
 
-    startState.board = (new Array(46)).fill(1).map((_, i) => {
-      return {id: i, i: -i, j: 0, rotation: 0};
-    });
+    // player 1 has 30 tiles on hand and 6 tiles in supply
+    // player 2 has 10 tiles including id:10
+    // board has 1 tile
+    // core has 1 tile
 
-    startState.players[0].hand = [{id: 47, rotation: 0}];
+    startState.players[0].hand = (new Array(30)).fill(1).map((_, i) => ({id: i + 11, rotation: 0}));
+    startState.players[0].supply = 6;
+    startState.players[1].hand = (new Array(10)).fill(1).map((_, i) => ({id: i + 1, rotation: 0}));
 
-    const nextState = reducer(startState, actions.connectTile('id1', 47, 0, 1, 0));
-    expect(nextState.players[0].hand.length).toBe(0);
+    // 1 1 + 1 0 -> id:28, first turn, core still has 1 tile
+    // 2 2 + 0 1
+    // + +
+    // 2 3 -> id:10, rotation: 3, second turn, core has no tiles, finish
+    // 1 0
+
+    let nextState = reducer(startState, actions.connectTile('id1', 28, 0, 0, 1));
+    expect(nextState.isFinished).toBe(false);
+
+    nextState = reducer(nextState, actions.connectTile('id2', 10, 3, 1, 0));
     expect(nextState.isFinished).toBe(true);
   });
 
@@ -377,8 +388,8 @@ describe('Game reducer', () => {
     // 0  0  + 0   3 | . .
     // 0 (1) + 1   0 | . .
     // +  +    -   -
-    // 3  1  | (1) 0
-    // 0  0  | 0   1
+    // 0  1  | (1) 0
+    // 3  0  | 0   1
 
     const nextState = reducer(startState, actions.connectTile('id1', 2, 2, 0, 0));
     expect(nextState.isFinished).toBe(true);

@@ -138,7 +138,7 @@ const handlers = {
       return state;
     }
 
-    const availableTilesCount = getAvailableTilesCount(state);
+    const closedTileCount = getClosedTilesCount(state);
     const catalysts = getCatalysts(boardTiles, tile, i, j);
 
     const nextTurn = -1 !== catalysts.indexOf(5)
@@ -147,12 +147,12 @@ const handlers = {
         }} : {turnQueue: setNextTurn(state.turnQueue, state.players)};
 
     const supplyIncrement = Math.min(
-      availableTilesCount,
+      closedTileCount,
       catalysts.filter(c => c === 3).length
       + (catalysts.filter(c => c === 4).length * 2)
     );
 
-    const isFinished = availableTilesCount <= 1;
+    const isFinished = (getCoreTilesCount(state) - supplyIncrement) <= 0;
     const nextBoardTiles = [...boardTiles, {...tile, i, j}];
     const nextState = update(state, {
       board: {$push: [{id: tileId, i, j, rotation}]},
@@ -245,7 +245,7 @@ function getCurrentPlayerIndex(currentTurn, players) {
   return ids.indexOf(currentTurn);
 }
 
-function getClosedTiles(state) {
+function getUnusedTileIds(state) {
   const inGameTilesIds = [
     ...state.board.map((t) => t.id),
     ...state.players.reduce((acc, p) => {
@@ -260,15 +260,21 @@ function getClosedTiles(state) {
 }
 
 function getRandomTiles(state, count) {
-  const closedTiles = getClosedTiles(state);
+  const closedTiles = getUnusedTileIds(state);
   return shuffle(closedTiles).slice(0, count).map((t) => {
     return {id: t.id, rotation: 0};
   });
 }
 
-function getAvailableTilesCount(state) {
+function getClosedTilesCount(state) {
   const supply = state.players.reduce((acc, p) => acc + p.supply, 0);
-  return getClosedTiles(state).length - supply;
+  return getUnusedTileIds(state).length - supply;
+}
+
+function getCoreTilesCount(state) {
+  return possibleTiles.length
+    - state.players.reduce((acc, p) => acc + p.hand.length + p.supply, 0)
+    - state.board.length;
 }
 
 function calculateScores(state, tiles) {
