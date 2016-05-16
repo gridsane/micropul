@@ -5,6 +5,7 @@ import {
   getCatalysts,
   getGroup,
   isBigTile,
+  isGroupClosed,
   transformTiles,
 } from '../domain/board';
 import {atIndex, shuffle, arg2str} from '../utils';
@@ -282,7 +283,9 @@ function calculateScores(state, tiles) {
   const groups = state.players.reduce((acc, p) => {
     p.stones.forEach((stone, index) => {
       const group = getGroup(tiles, stone.i, stone.j, stone.corner);
-      acc.push({hash: hashGroup(group), group, playerId: p.id, index});
+      if (group.length && isGroupClosed(tiles, group)) {
+        acc.push({hash: hashGroup(group), group, playerId: p.id, index});
+      }
     });
     return acc;
   }, []);
@@ -307,7 +310,7 @@ function calculateScores(state, tiles) {
 
     return scores;
   }, state.players.reduce((initialScores, p) => {
-    initialScores[p.id] = 0;
+    initialScores[p.id] = p.hand.length + p.supply * 2;
     return initialScores;
   }, {}));
 }

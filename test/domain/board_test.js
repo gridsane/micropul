@@ -496,32 +496,36 @@ describe('Board', () => {
     const tiles = [
       {
         i: 0, j: 0,
-        corners: [[1], [1], [3], [1]],
+        rotation: 2,
+        corners: [[1], [0], [0], [0]],
       },
       {
         i: 0, j: 1,
-        corners: [[1], [3], [2], [0]],
-      },
-      {
-        i: 1, j: 1,
-        corners: [[4], [2], [2], [0]],
+        rotation: 3,
+        corners: [[1], [0], [3], [0]],
       },
       {
         i: 1, j: 0,
-        corners: [[1], [2], [5], [2]],
+        rotation: 1,
+        corners: [[1], [0], [0], [3]],
+      },
+      {
+        i: 1, j: 1,
+        rotation: 0,
+        corners: [[1], [0], [1], [0]],
       },
     ];
 
-    // 1 1 | 1 3
-    // 1 3 | 0 2
-
+    // 0 0 | 0 3
+    // 0 1 | 1 0
     // - -   - -
-    // 1 2 | 3 2
-    // 2 5 | 0 2
-    const openGroup = board.getGroup(tiles, 0, 0, 0);
+    // 3 1 | 1 0
+    // 0 0 | 0 1
+
+    const openGroup = board.getGroup(tiles, 1, 1, 2);
     expect(board.isGroupClosed(tiles, openGroup)).toBe(false);
 
-    const closedGroup = board.getGroup(tiles, 1, 0, 1);
+    const closedGroup = board.getGroup(tiles, 0, 0, 0);
     expect(board.isGroupClosed(tiles, closedGroup)).toBe(true);
   });
 

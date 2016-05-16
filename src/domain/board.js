@@ -141,7 +141,9 @@ export function getGroup(tiles, i, j, cornerIndex) {
 
 export function isGroupClosed(tiles, group) {
   return group.reduce((acc, el) => {
-    const sides = [el.corner - 1 < 0 ? 3 : el.corner - 1, el.corner];
+    const rotation = tiles.find((t) => t.i === el.i && t.j === el.j).rotation;
+    const corner = getCornerIndex(el.corner + rotation);
+    const sides = [corner - 1 < 0 ? 3 : corner - 1, corner];
     return sides.reduce((acc, side) => {
       const closeTile = tiles.find((t) => {
         return t.i === el.i + sidesShift[side].di

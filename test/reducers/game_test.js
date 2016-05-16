@@ -365,56 +365,100 @@ describe('Game reducer', () => {
       {id: 28, i: 1, j: 1, rotation: 0}, // 1 0 1 0
     ];
 
-    startState.players[0].hand = [{id: 2, rotation: 2}], // 1 0 0 0
-    startState.players[0].stones = [{i: 1, j: 0, corner: 0}];
-    startState.players[1].stones = [{i: 1, j: 1, corner: 3}];
+    // board: 3 tiles
+    // player1: 1 tile on hand, 21 tiles in supply
+    // player2: 1 tile on hand, 21 tiles in supply
+    // core: 1 tile
 
-    (new Array(48)).fill(1).forEach((_, i) => {
-      if ([2, 8, 14, 28].indexOf(i) === -1) {
-        startState.board.push({id: i, i: 0, j: 2 + i, rotation: 0});
-      }
-    });
+    startState.players[0].hand = [{id: 42, rotation: 2}], // 1 1 1 1
+    startState.players[0].supply = 21;
+    startState.players[0].stones = [{i: 1, j: 1, corner: 0}];
 
-    // 0  0  + 0  3 | . .
-    // 0  1  + 1  0 | . .
-    // +  +    -  -
-    // 3 (1) | 1  0
-    // 0  0  | 0 (1)
+    startState.players[1].hand = [{id: 1, rotation: 0}];
+    startState.players[1].supply = 21;
+    startState.players[1].stones = [{i: 1, j: 1, corner: 2}];
 
-    const nextState = reducer(startState, actions.connectTile('id1', 2, 2, 0, 0));
+    // 1 1 + 0   3
+    // 1 1 + 1   0
+    // + +   -   -
+    // 3 1 | (1) 0
+    // 0 0 | 0  (1)
+
+    // player 1 finishes the game by placing last tile and gains 1 supply tile
+    const nextState = reducer(startState, actions.connectTile('id1', 42, 0, 0, 0));
     expect(nextState.isFinished).toBe(true);
-    expect(nextState.players[0].score).toBe(4);
-    expect(nextState.players[1].score).toBe(0);
+    expect(nextState.players[0].score).toBe(0/*group*/ + 44/*supply*/ + 0/*hand*/);
+    expect(nextState.players[1].score).toBe(0/*group*/ + 42/*supply*/ + 1/*hand*/);
   });
 
-  it('does not calculate a score based on groups with more than one stone', () => {
+  it('calculates a score based on closed groups', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
     startState.board = [
+      {id: 2, i: 0, j: 0, rotation: 2}, // 1 0 0 0
       {id: 8, i: 0, j: 1, rotation: 3}, // 1 0 3 0
       {id: 14, i: 1, j: 0, rotation: 1}, // 1 0 0 3
       {id: 28, i: 1, j: 1, rotation: 0}, // 1 0 1 0
     ];
 
-    startState.players[0].hand = [{id: 2, rotation: 2}], // 1 0 0 0
-    startState.players[0].stones = [{i: 1, j: 0, corner: 0}];
+    startState.players[0].hand = [{id: 46, rotation: 0}], // 1,3 1,3 1,3 1,3
+    startState.players[0].supply = 21;
+    startState.players[0].stones = [{i: 1, j: 1, corner: 0}];
+
+    startState.players[1].hand = [{id: 1, rotation: 0}];
+    startState.players[1].supply = 20;
+
+    // board: 4 tiles
+    // player1: 1 tile on hand, 21 tiles in supply
+    // player2: 1 tile on hand, 20 tiles in supply
+    // core: 1 tile
+
+    // 0 0 | 0 3
+    // 0 1 | 1 0
+    // - -   -  -
+    // 3 1 | (1) 0  + [1,3] [1,3]
+    // 0 0 | 0   1 + [1,3] [1,3]
+
+    // player 1 finishes the game by placing last tile and gains 1 supply tile
+    const nextState = reducer(startState, actions.connectTile('id1', 46, 0, 1, 2));
+    expect(nextState.isFinished).toBe(true);
+    expect(nextState.players[0].supply).toBe(22);
+    expect(nextState.players[0].score).toBe(4/*group*/ + 44/*supply*/ + 0/*hand*/);
+    expect(nextState.players[1].score).toBe(0/*group*/ + 40/*supply*/ + 1/*hand*/);
+  });
+
+  it('does not calculate a score based on groups with more than one stone', () => {
+    const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
+    startState.board = [
+      {id: 2, i: 0, j: 0, rotation: 2}, // 1 0 0 0
+      {id: 8, i: 0, j: 1, rotation: 3}, // 1 0 3 0
+      {id: 14, i: 1, j: 0, rotation: 1}, // 1 0 0 3
+      {id: 28, i: 1, j: 1, rotation: 0}, // 1 0 1 0
+    ];
+
+    startState.players[0].hand = [{id: 46, rotation: 0}];  // 1,3 1,3 1,3 1,3
+    startState.players[0].stones = [{i: 0, j: 0, corner: 0}];
+    startState.players[0].supply = 21;
+
+    startState.players[1].hand = [{id: 1, rotation: 0}];
     startState.players[1].stones = [{i: 1, j: 1, corner: 0}];
+    startState.players[1].supply = 20;
 
-    (new Array(48)).fill(1).forEach((_, i) => {
-      if ([2, 8, 14, 28].indexOf(i) === -1) {
-        startState.board.push({id: i, i: 0, j: 2 + i, rotation: 0});
-      }
-    });
+    // board: 4 tiles
+    // player1: 1 tile on hand, 21 tiles in supply
+    // player2: 1 tile on hand, 20 tiles in supply
+    // core: 1 tile
 
-    // 0  0  + 0   3 | . .
-    // 0 (1) + 1   0 | . .
-    // +  +    -   -
+    // 0  0  | 0   3
+    // 0 (1) | 1   0
+    // -  -    -   -
     // 0  1  | (1) 0
     // 3  0  | 0   1
 
-    const nextState = reducer(startState, actions.connectTile('id1', 2, 2, 0, 0));
+    // player 1 finishes the game by placing last tile and gains 1 supply tile
+    const nextState = reducer(startState, actions.connectTile('id1', 46, 0, 1, 2));
     expect(nextState.isFinished).toBe(true);
-    expect(nextState.players[0].score).toBe(0);
-    expect(nextState.players[1].score).toBe(0);
+    expect(nextState.players[0].score).toBe(0/*group*/ + 44/*supply*/ + 0/*hand*/);
+    expect(nextState.players[1].score).toBe(0/*group*/ + 40/*supply*/ + 1/*hand*/);
   });
 
   it('counts "big" tiles as 5 score points', () => {
@@ -431,11 +475,17 @@ describe('Game reducer', () => {
     ];
 
     startState.players[0].hand = [{id: 42, rotation: 0}], // 1 1 1 1 [42]
-    (new Array(48)).fill(1).forEach((_, i) => {
-      if ([20, 22, 32, 34, 8, 14, 28, 1, 42].indexOf(i) === -1) {
-        startState.board.push({id: i, i: 0, j: 3 + i, rotation: 0});
-      }
-    });
+    startState.players[0].stones = [{i: 0, j: 1, corner: 2}];
+    startState.players[0].supply = 8;
+
+    startState.players[1].hand = [];
+    startState.players[1].supply = 30;
+    startState.players[1].stones = [];
+
+    // board: 8 tiles
+    // player1: 1 tile on hand, 8 tiles in supply
+    // player2: 0 tile on hand, 30 tiles in supply
+    // core: 1 tile
 
     //      [20]  [1]   [8]
     //      5 0 | 0  0  | 0 3 | . .
@@ -448,12 +498,11 @@ describe('Game reducer', () => {
     //      2 0 | 0  0  | 0 3
     //      [34]  [14]   [32]
 
-    startState.players[0].stones = [{i: 0, j: 1, corner: 2}];
-    startState.players[1].stones = [];
 
+    // player 1 finishes the game by placing last tile and gains 1 supply tile
     const nextState = reducer(startState, actions.connectTile('id1', 42, 0, 1, 1));
     expect(nextState.isFinished).toBe(true);
-    expect(nextState.players[0].score).toBe(15);
-    expect(nextState.players[1].score).toBe(0);
+    expect(nextState.players[0].score).toBe(15/*group*/ + 18/*supply*/ + 0/*hand*/);
+    expect(nextState.players[1].score).toBe(0/*group*/ + 60/*supply*/ + 0/*hand*/);
   });
 });
