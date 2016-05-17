@@ -298,7 +298,7 @@ function calculateScores(state, tiles) {
           if (countedPositions.indexOf(posHash) === -1) {
             const tile = tiles.find((t) => t.i === c.i && t.j === c.j);
             if (isBigTile(tile)) {
-              bigTilesPoints += 1;
+              bigTilesPoints -= 3;
             }
 
             countedPositions.push(posHash);

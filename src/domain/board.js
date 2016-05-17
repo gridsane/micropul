@@ -293,7 +293,7 @@ function getCornerCatalysts(corner) {
 
 export function isBigTile(tile) {
   return tile.corners.slice(1).reduce((isBig, c, i) => {
-    return isBig && tile.corners[i].join() == c.join();
+    return isBig && tile.corners[i].join() === c.join() && c.length === 2;
   }, true);
 }
 

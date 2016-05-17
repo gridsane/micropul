@@ -461,7 +461,7 @@ describe('Game reducer', () => {
     expect(nextState.players[1].score).toBe(0/*group*/ + 40/*supply*/ + 1/*hand*/);
   });
 
-  it('counts "big" tiles as 5 score points', () => {
+  it('counts "big" tiles as 1 score points', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
     startState.board = [
       {id: 20, i: 0, j: 0, rotation: 2}, // 1 3 0 5
@@ -474,7 +474,7 @@ describe('Game reducer', () => {
       {id: 1, i: 0, j: 1, rotation: 0}, // 2 2 1 1
     ];
 
-    startState.players[0].hand = [{id: 42, rotation: 0}], // 1 1 1 1 [42]
+    startState.players[0].hand = [{id: 46, rotation: 0}], // 1,3 1,3 1,3 1,3
     startState.players[0].stones = [{i: 0, j: 1, corner: 2}];
     startState.players[0].supply = 8;
 
@@ -487,22 +487,22 @@ describe('Game reducer', () => {
     // player2: 0 tile on hand, 30 tiles in supply
     // core: 1 tile
 
-    //      [20]  [1]   [8]
-    //      5 0 | 0  0  | 0 3 | . .
-    //      3 1 | 1 (1) | 1 0 | . .
-    //      - -   +  +    - -
-    // [22] 4 1 + 1  1  + 1 0 [28]
-    //      0 1 + 1  1  + 0 1
-    //      - -   +  +    - -
-    //      3 1 | 3  1  | 1 4
-    //      2 0 | 0  0  | 0 3
-    //      [34]  [14]   [32]
+    //      [20]  [1]        [8]
+    //      5 0 | 0     0  | 0 3 | . .
+    //      3 1 | 1    (1) | 1 0 | . .
+    //      - -   +     +    - -
+    // [22] 4 1 + 1,3  1,3  + 1 0 [28]
+    //      0 1 + 1,3  1,3  + 0 1
+    //      - -   +     +    - -
+    //      3 1 | 3     1  | 1 4
+    //      2 0 | 0     0  | 0 3
+    //      [34]  [14]      [32]
 
 
     // player 1 finishes the game by placing last tile and gains 1 supply tile
-    const nextState = reducer(startState, actions.connectTile('id1', 42, 0, 1, 1));
+    const nextState = reducer(startState, actions.connectTile('id1', 46, 0, 1, 1));
     expect(nextState.isFinished).toBe(true);
-    expect(nextState.players[0].score).toBe(15/*group*/ + 18/*supply*/ + 0/*hand*/);
+    expect(nextState.players[0].score).toBe(11/*group*/ + 18/*supply*/ + 0/*hand*/);
     expect(nextState.players[1].score).toBe(0/*group*/ + 60/*supply*/ + 0/*hand*/);
   });
 });

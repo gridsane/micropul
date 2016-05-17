@@ -579,4 +579,11 @@ describe('Board', () => {
     ]);
   });
 
+  it('determines big tile', () => {
+    expect(board.isBigTile({corners: [[1], [1], [1], [1]]})).toBe(false);
+    expect(board.isBigTile({corners: [[1], [1], [1], [0]]})).toBe(false);
+    expect(board.isBigTile({corners: [[1,3], [1], [1], [0]]})).toBe(false);
+    expect(board.isBigTile({corners: [[1,3], [1,3], [1,3], [1,3]]})).toBe(true);
+  });
+
 });
