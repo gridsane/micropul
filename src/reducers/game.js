@@ -217,18 +217,6 @@ const handlers = {
       updatedAt: setNow(),
     });
   },
-  [actions.GAME_SKIP_TURN]: (state, action) => {
-    const playerId = action.playerId;
-
-    if (playerId !== state.turnQueue[0]) {
-      return state;
-    }
-
-    return update(state, {
-      turnQueue: setNextTurn(state.turnQueue, state.players),
-      updatedAt: setNow(),
-    });
-  },
   [actions.GAME_MERGE_STATE]: (state, action) => {
     return {...state, ...action.newState};
   },

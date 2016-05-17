@@ -33,13 +33,13 @@ describe('Game reducer', () => {
     expect(nextState.updatedAt).toNotBe(startState.updatedAt);
   });
 
-  it('do not places a stone out of turn', () => {
+  it('does not place a stone out of turn', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
     const nextState = reducer(startState, actions.placeStone('id2', 0, 1));
     expect(startState).toEqual(nextState);
   });
 
-  it('do not places a stone in a occupied group', () => {
+  it('does not place a stone in a occupied group', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
     let nextState = reducer(startState, actions.placeStone('id1', 0, 1));
 
@@ -87,7 +87,7 @@ describe('Game reducer', () => {
     expect(nextState.updatedAt).toNotBe(startState.updatedAt);
   });
 
-  it('do not connects a tile, if it not possible', () => {
+  it('does not connect a tile, if it not possible', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
 
     // fill hands with known tiles
@@ -98,7 +98,7 @@ describe('Game reducer', () => {
     expect(nextState).toBe(startState);
   });
 
-  it('do not connects a tile out of turn', () => {
+  it('does not connect a tile out of turn', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
 
     // fill hands with known tiles
@@ -109,7 +109,7 @@ describe('Game reducer', () => {
     expect(nextState).toBe(startState);
   });
 
-  it('do not connects a tile if player does not have it', () => {
+  it('does not connect a tile if player don\'t have it', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
 
     // fill hands with known tiles
@@ -261,7 +261,7 @@ describe('Game reducer', () => {
     expect(nextState.updatedAt).toNotBe(startState.updatedAt);
   });
 
-  it('do not refills a hand out of turn', () => {
+  it('does not refill a hand out of turn', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
 
     // fill hands with known tiles
@@ -282,22 +282,9 @@ describe('Game reducer', () => {
     expect([...new Set(nextState.players[0].hand)].length).toBe(7);
   });
 
-  it('do not skips turn if there are no supply when refilling a hand', () => {
+  it('does not pass turn if there are no supply when refilling a hand', () => {
     const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
     const nextState = reducer(startState, actions.refillHand('id1', 1));
-    expect(nextState).toBe(startState);
-  });
-
-  it('skips turn', () => {
-    const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
-    const nextState = reducer(startState, actions.skipTurn('id1'));
-    expect(nextState.turnQueue).toEqual(['id2']);
-    expect(nextState.updatedAt).toNotBe(startState.updatedAt);
-  });
-
-  it('do not skips turn out of turn', () => {
-    const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
-    const nextState = reducer(startState, actions.skipTurn('id2'));
     expect(nextState).toBe(startState);
   });
 

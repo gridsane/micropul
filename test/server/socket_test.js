@@ -1,5 +1,5 @@
 import initSocket from '../../src/server/socket';
-import {skipTurn} from '../../src/actions/game';
+import {refillHand} from '../../src/actions/game';
 
 describe('Multiplayer socket', () => {
 
@@ -96,21 +96,20 @@ describe('Multiplayer socket', () => {
     ioMock.emit('connection', socket1);
     ioMock.emit('connection', socket2);
 
+    server.games[0].players[0].supply = 1;
     const gameState = server.games[0];
 
     socket1.on('game_update_state', function (nextState) {
       expect(nextState.players[1].hand).toBe(6);
       expect(nextState.playerId).toEqual(gameState.players[0].id);
-      expect(nextState.turnQueue).toEqual([nextState.players[1].id]);
     });
 
     socket2.on('game_update_state', function (nextState) {
-      expect(nextState.players[0].hand).toBe(6);
+      expect(nextState.players[0].hand).toBe(7);
       expect(nextState.playerId).toEqual(gameState.players[1].id);
-      expect(nextState.turnQueue).toEqual([nextState.players[1].id]);
     });
 
-    socket1.emit('game_action', skipTurn(gameState.players[0].id));
+    socket1.emit('game_action', refillHand(gameState.players[0].id));
   });
 
 });
