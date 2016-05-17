@@ -505,4 +505,32 @@ describe('Game reducer', () => {
     expect(nextState.players[0].score).toBe(11/*group*/ + 18/*supply*/ + 0/*hand*/);
     expect(nextState.players[1].score).toBe(0/*group*/ + 60/*supply*/ + 0/*hand*/);
   });
+
+  it('zeroes score for player with no tiles', () => {
+    const startState = reducer(undefined, actions.start('game_id', ['id1', 'id2']));
+
+    startState.board = [
+      {id: 8, i: 0, j: 1, rotation: 3}, // 1 0 3 0
+      {id: 14, i: 1, j: 0, rotation: 1}, // 1 0 0 3
+      {id: 28, i: 1, j: 1, rotation: 0}, // 1 0 1 0
+    ];
+
+    startState.players[0].hand = [{id: 2, rotation: 2}]; // 1 0 0 0
+    startState.players[0].stones = [{i: 1, j: 1, corner: 0}];
+    startState.players[1].hand = [];
+    startState.players[1].supply = 1;
+
+    // 0 0 + 0   3
+    // 0 1 + 1   0
+    // + +   -   -
+    // 0 1 | (1) 0
+    // 3 0 | 0   1
+
+    // player 1 places his last tile
+    const nextState = reducer(startState, actions.connectTile('id1', 2, 2, 0, 0));
+    expect(nextState.isFinished).toBe(true);
+    expect(nextState.players[0].score).toBe(0);
+    expect(nextState.players[1].score).toBe(2);
+  });
+
 });

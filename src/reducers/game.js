@@ -153,7 +153,6 @@ const handlers = {
       + (catalysts.filter(c => c === 4).length * 2)
     );
 
-    const nextBoardTiles = [...boardTiles, {...tile, i, j}];
     const nextState = update(state, {
       board: {$push: [{id: tileId, i, j, rotation}]},
       players: {
@@ -175,11 +174,18 @@ const handlers = {
     const playerHasTiles = (player.hand.length + player.supply) > 1;
 
     if (getCoreTilesCount(nextState) <= 0 || !playerHasTiles) {
-      const scores = calculateScores(nextState, nextBoardTiles);
+      const nextBoardTiles = [...boardTiles, {...tile, i, j}];
+      const scores = calculateScores(
+        (!playerHasTiles
+          ? nextState.players.filter(p => p.id !== player.id)
+          : nextState.players),
+        nextBoardTiles
+      );
       return update(nextState, {
-        players: {$set: nextState.players.map((player) => {
-          return {...player, score: scores[player.id]};
-        })},
+        players: {$set: nextState.players.map((p) => ({
+            ...p,
+            score: scores[p.id] || 0,
+        }))},
         isFinished: {$set: true},
       });
     }
@@ -279,8 +285,8 @@ function getCoreTilesCount(state) {
     - state.board.length;
 }
 
-function calculateScores(state, tiles) {
-  const groups = state.players.reduce((acc, p) => {
+function calculateScores(players, tiles) {
+  const groups = players.reduce((acc, p) => {
     p.stones.forEach((stone, index) => {
       const group = getGroup(tiles, stone.i, stone.j, stone.corner);
       if (group.length && isGroupClosed(tiles, group)) {
@@ -309,7 +315,7 @@ function calculateScores(state, tiles) {
     }
 
     return scores;
-  }, state.players.reduce((initialScores, p) => {
+  }, players.reduce((initialScores, p) => {
     initialScores[p.id] = p.hand.length + p.supply * 2;
     return initialScores;
   }, {}));
