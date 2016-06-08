@@ -12,7 +12,8 @@
     "start": "NODE_ENV=production node build/server.js",
     "nodemon": "nodemon -x 'babel-node' -w './src/server*' src/server.js",
     "test": "mocha --compilers=js:babel-core/register --require=babel-polyfill --require=./test/setup --recursive './test/**/*_test.js'",
-    "lint": "eslint src test"
+    "lint": "eslint src test",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "autoprefixer": "^6.3.6",
