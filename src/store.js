@@ -3,7 +3,7 @@ import thunkMiddleware from 'redux-thunk';
 import reducer from './reducers/app';
 
 const devTools = getWindowProp('devToolsExtension', () => x => x);
-const initialState = getWindowProp('INITIAL_STATE');
+const initialState = getWindowProp('INITIAL_STATE', {game: undefined});
 
 const store = compose(
   applyMiddleware(thunkMiddleware),
@@ -13,7 +13,7 @@ const store = compose(
 export default store;
 
 function getWindowProp(prop, defaultValue = null) {
-  return typeof window === 'object' && window[prop] !== 'undefined'
+  return typeof window === 'object' && typeof(window[prop]) !== 'undefined'
     ? window[prop]
     : defaultValue;
 }
