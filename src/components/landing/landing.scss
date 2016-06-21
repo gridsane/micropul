@@ -1,0 +1,63 @@
+@import '../application/_color.scss';
+
+.root {
+  padding: 1em;
+  height: 50vh;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.headingBlock {
+  padding: 1em 3em 1.5em 3em;
+  border: 4px solid $primaryColor;
+}
+
+.title {
+  display: inline-block;
+  font-size: 4em;
+  margin: 0;
+}
+
+.tagline {
+  margin: 0;
+}
+
+.actions {
+  margin-top: 2em;
+}
+
+.linkMulti, .linkSolo {
+  display: inline-block;
+  padding: 1em;
+  margin: .3em;
+  text-decoration: none;
+  color: #fff;
+  box-sizing: border-box;
+  border: 4px solid transparent;
+  transition: background-color .15s ease-out,
+              color .15s ease-out;
+
+  &:hover {
+    background-color: transparent;
+  }
+}
+
+.linkMulti {
+  background-color: $contrastColor;
+
+  &:hover {
+    border-color: $contrastColor;
+    color: $contrastColor;
+  }
+}
+
+.linkSolo {
+  background-color: $accentColor;
+
+  &:hover {
+    border-color: $accentColor;
+    color: $accentColor;
+  }
+}

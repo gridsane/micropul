@@ -8,8 +8,8 @@ import GameSolo from '../game/game-solo';
 export default class Application extends Component {
   render() {
     return <Router history={hashHistory}>
-      <Route path="/" component={Layout}>
-        <IndexRoute component={Landing} />
+      <Route path="/" component={Landing} />
+      <Route component={Layout}>
         <Route path="/multi" component={GameMultiplayer} />
         <Route path="/solo" component={GameSolo} />
       </Route>
