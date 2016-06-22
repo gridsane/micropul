@@ -16,7 +16,7 @@ export default class GameMultiplayer extends Component {
       return null;
     }
     return <div className={styles.solo}>
-      {isFinished ? <Finish playerScore={player.score + 300} /> : null}
+      {isFinished ? <Finish playerScore={player.score} /> : null}
       <Game
         core={core}
         tiles={tiles}

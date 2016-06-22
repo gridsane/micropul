@@ -1,0 +1,41 @@
+@import '../application/_color.scss';
+
+.button {
+  display: inline-block;
+  padding: .5em;
+  text-decoration: none;
+  color: $backgroundColor;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background-color .15s ease-out,
+              color .15s ease-out;
+
+  &Large {
+    border-width: 4px;
+    padding: 1em;
+  }
+
+  @mixin buttonColor($color) {
+    background-color: $color;
+
+    &:focus {
+      opacity: .7;
+      background-color: rgba($color, .8);
+      border-color: $color;
+      outline: none;
+    }
+
+    &:hover {
+      background-color: transparent;
+      border-color: $color;
+      color: $color;
+    }
+  }
+
+  @include buttonColor($accentColor);
+
+  &Contrast {
+    @include buttonColor($contrastColor);
+  }
+}

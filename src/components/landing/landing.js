@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router';
+import LinkButton from '../ui/link-button';
 import styles from './landing.scss';
 
 export default class Landing extends Component {
@@ -12,8 +12,17 @@ export default class Landing extends Component {
         </div>
 
         <div className={styles.actions}>
-          <Link className={styles.linkMulti} to="/multi">Play with people</Link>
-          <Link className={styles.linkSolo} to="/solo">Go solo</Link>
+          <LinkButton
+            to="/multi"
+            label="Play with people"
+            large
+            contrast
+            className={styles.link} />
+          <LinkButton
+            to="/solo"
+            label="Go solo"
+            large
+            className={styles.link} />
         </div>
       </div>
     </div>;

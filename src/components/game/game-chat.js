@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import Button from '../ui/button';
 import ClassNames from 'classnames';
 import styles from './game.scss';
 
@@ -40,9 +41,10 @@ export default class Chat extends Component {
           placeholder="Type your message!"
           type="text"
           className={styles.chatSendInput} />
-        <button
+        <Button
           onClick={this._sendMessage}
-          className={styles.chatSendButton}>Send</button>
+          label="Send"
+          className={styles.chatSendButton} />
       </div>
     </aside>;
   }

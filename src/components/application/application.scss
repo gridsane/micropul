@@ -11,6 +11,11 @@
     color: $primaryColor;
     background-color: $backgroundColor;
     -webkit-font-smoothing: antialiased;
+    font-size: 16px;
+  }
+
+  input,select,textarea,button {
+    font-size: 1em;
   }
 
 }
@@ -21,7 +26,16 @@
     height: 60px;
     padding: 16px;
     box-sizing: border-box;
-    font-size: 24px;
+
+    &Title {
+      display: inline-block;
+      margin: 0;
+      padding: .2em .5em;
+      font-size: 20px;
+      font-weight: 800;
+      border: 2px solid $primaryColor;
+      margin-top: -4px;
+    }
   }
 
   &Main {
