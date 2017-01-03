@@ -12,7 +12,7 @@ $tileSize: 64px;
 .tile {
   @include tileSize;
   box-shadow: 2px 2px 3px rgba($primaryColor, .2);
-  background-color: $backgroundColor;
+  background-color: #fff;
   border: 1px solid rgba($primaryColor, .3);
   box-sizing: border-box;
 

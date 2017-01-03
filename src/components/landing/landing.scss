@@ -1,12 +1,12 @@
 @import '../application/_color.scss';
 
 .root {
-  padding: 1em;
-  height: 50vh;
-  text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 75vh;
+  box-sizing: border-box;
+  padding: 1em;
 }
 
 .headingBlock {
@@ -25,6 +25,7 @@
 }
 
 .actions {
+  text-align: center;
   margin-top: 2em;
 }
 
