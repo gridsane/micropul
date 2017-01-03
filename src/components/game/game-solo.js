@@ -4,7 +4,6 @@ import {start, connectTile, placeStone, refillHand} from '../../actions/game';
 import {transformTiles} from '../../domain/board';
 import styles from './game.scss';
 import Game from './game';
-import Finish from './game-finish';
 
 @connect(mapToProps)
 export default class GameMultiplayer extends Component {
@@ -15,8 +14,8 @@ export default class GameMultiplayer extends Component {
     if (!isStarted) {
       return null;
     }
+
     return <div className={styles.solo}>
-      {isFinished ? <Finish playerScore={player.score} /> : null}
       <Game
         core={core}
         tiles={tiles}
@@ -27,6 +26,10 @@ export default class GameMultiplayer extends Component {
         onConnectTile={this._connectTile}
         onPlaceStone={this._placeStone}
         onRefillHand={this._refillHand}
+        isFinished={isFinished}
+        playerScore={player.score}
+        onRestart={this._restart}
+        onChangeGame={this._gotoMulti}
         className={styles.soloGame} />
     </div>;
   }
@@ -47,6 +50,13 @@ export default class GameMultiplayer extends Component {
      this.props.dispatch(refillHand('solo_player', 1));
   }
 
+  _restart = () => {
+    console.warn('restart');
+  }
+
+  _gotoMulti = () => {
+    console.warn('go to multi');
+  }
 }
 
 export function mapToProps(state) {

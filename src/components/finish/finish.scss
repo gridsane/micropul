@@ -1,0 +1,43 @@
+@import '../application/_color.scss';
+
+.root {
+  display: flex;
+  justify-content: center;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  max-width: 100%;
+  padding: .5em 0 1em;
+}
+
+.title {
+  font-size: 1.5em;
+  font-weight: 800;
+}
+
+.score {
+  margin: .5em 0 1em;
+
+  &Player, &Opponent {
+    font-weight: 800;
+    font-size: 1.2em;
+    color: $primaryColor;
+
+    &:before {
+      content: ' ';
+    }
+  }
+
+  &Opponent {
+    color: $contrastColor;
+  }
+}
+
+.action + .action {
+  margin-left: 1em;
+}

@@ -6,7 +6,6 @@ import {transformTiles} from '../../domain/board';
 import styles from './game.scss';
 import Game from './game';
 import Chat from './game-chat';
-import Finish from './game-finish';
 
 @connect(mapToProps)
 export default class GameMultiplayer extends Component {
@@ -36,12 +35,6 @@ export default class GameMultiplayer extends Component {
 
     return <div className={styles.multiplayer}>
       <div className={styles.multiplayerGame}>
-        {isFinished
-          ? <Finish
-              playerScore={player.score + 100}
-              opponentScore={opponents[0].score + 99}
-            />
-          : null}
         <Game
           core={core}
           tiles={tiles}
@@ -51,7 +44,13 @@ export default class GameMultiplayer extends Component {
           boardStones={boardStones}
           onConnectTile={this._connectTile}
           onPlaceStone={this._placeStone}
-          onRefillHand={this._refillHand} />
+          onRefillHand={this._refillHand}
+          isFinished={isFinished}
+          playerScore={player.score}
+          opponentScore={opponents[0].score}
+          onRestart={this._restart}
+          onChangeGame={this._gotoSolo}
+          className={styles.soloGame} />
       </div>
       <Chat
         playerId={player.id}
@@ -59,7 +58,6 @@ export default class GameMultiplayer extends Component {
         onSend={this._sendMessage} />
     </div>;
   }
-
 
   componentWillMount() {
     const socket = io({forceNew: true});
@@ -99,6 +97,14 @@ export default class GameMultiplayer extends Component {
 
   _addMessage = (data) => {
     this.setState({messages: [...this.state.messages, data]});
+  }
+
+  _restart = () => {
+    console.warn('restart');
+  }
+
+  _gotoSolo = () => {
+    console.warn('go to solo');
   }
 }
 

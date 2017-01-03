@@ -9,6 +9,7 @@ import {
 import ClassNames from 'classnames';
 import styles from './game.scss';
 import Board from '../board/board-pannable';
+import Finish from '../finish/finish';
 import Player from './game-player';
 
 const TILE_SIZE = 64;
@@ -25,6 +26,10 @@ export class Game extends Component {
     onConnectTile: PropTypes.func.isRequired,
     onPlaceStone: PropTypes.func.isRequired,
     onRefillHand: PropTypes.func.isRequired,
+    playerScore: PropTypes.number,
+    opponentScore: PropTypes.number,
+    onRestart: PropTypes.func.isRequired,
+    onChangeGame: PropTypes.func.isRequired,
   }
 
   state = {
@@ -38,6 +43,14 @@ export class Game extends Component {
     const {possibleConnections, possibleStonePlaces} = this.state;
 
     return <div className={ClassNames(styles.game, className)}>
+      {this.props.isFinished
+        ? <Finish
+            playerScore={this.props.playerScore}
+            opponentScore={this.props.opponentScore}
+            onRestart={this.props.onRestart}
+            onChangeGame={this.props.onChangeGame} />
+        : null}
+
       <Board
         tileSize={TILE_SIZE}
         tiles={tiles}
